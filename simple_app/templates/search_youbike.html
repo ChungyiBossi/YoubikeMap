@@ -1,0 +1,35 @@
+<!doctype html>
+<header>
+    <title>Search Youbike</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        
+        th,
+        td {
+            padding: 5px;
+        }
+    </style>
+    <!-- flask import rule (jinja 2) -->
+    <script type="text/javascript" src="{{url_for('static', filename='search_youbike.js')}}"></script>
+</header>
+
+<body>
+    <div>
+        <h3>搜尋Youbike站</h3>
+        <div id="youbikeSearch">
+            <input type="text" id="youbikeSearchInput" onkeyup="showHint(this.value)" />
+            <button type="button" onclick="searchYoubike()">Submit</button>
+            <div>
+                Hint:
+                <div id="youbikeSearchHint"></div>
+            </div>
+            <br/>
+            <table id="youbikeSearchResultTable"></table>
+        </div>
+    </div>
+</body>
