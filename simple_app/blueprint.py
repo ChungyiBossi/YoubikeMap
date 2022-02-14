@@ -18,6 +18,10 @@ def add_rawdata():
 def search_youbike():
     return render_template("search_youbike.html")
 
+@simple_route.route("/google_map", methods=["GET"])
+def google_map_sample():
+    return render_template("google_map.html")
+
 @simple_route.route("/search_hint/<query>", methods=["GET"])
 def search_hint_page(query):
     return search_hint(escape(query))
