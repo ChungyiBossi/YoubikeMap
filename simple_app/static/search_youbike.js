@@ -9,8 +9,9 @@ function createHttpRequestor() {
     }
     return xmlhttpRequestor
 }
+// response handler
+function createYoubikeResponseTable(jsonData, search_query) {
 
-function createYoubikeResponse(jsonData, search_query) {
     var table = "<tr><th>Station Number</th><th>Address</th><th>Bike Number</th></tr>";
     for (i = 0; i < jsonData.length; i++) {
         if (jsonData[i].sarea == search_query || jsonData[i].ar.includes(search_query)) {
@@ -20,14 +21,14 @@ function createYoubikeResponse(jsonData, search_query) {
     document.getElementById("youbikeSearchResultTable").innerHTML = table;
 }
 
-function searchYoubike() {
-
+// search youbike stations location api
+function searchYoubike(inputEleName, sucessCallback) {
     var xmlhttp = createHttpRequestor()
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            youbikeData = JSON.parse(this.responseText);
-            search_query = document.getElementById("youbikeSearchInput").value
-            createYoubikeResponse(youbikeData, search_query)
+            let youbikeData = JSON.parse(this.responseText);
+            let search_query = inputEleName.value
+            sucessCallback(youbikeData, search_query)
         }
     }
     xmlhttp.open("GET", "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json", true);
@@ -35,6 +36,7 @@ function searchYoubike() {
     xmlhttp.send();
 }
 
+// youbike query hint
 function showHint(str) {
     if (str.length == 0) {
         document.getElementById("youbikeSearchHint").innerHTML = "";

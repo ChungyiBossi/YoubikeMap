@@ -16,14 +16,16 @@
     </style>
     <!-- flask import rule (jinja 2) -->
     <script type="text/javascript" src="{{url_for('static', filename='search_youbike.js')}}"></script>
+
 </header>
+
 
 <body>
     <div>
         <h3>搜尋Youbike站</h3>
         <div id="youbikeSearch">
             <input type="text" id="youbikeSearchInput" onkeyup="showHint(this.value)" />
-            <button type="button" onclick="searchYoubike()">Submit</button>
+            <button type="button" id="youbikeSearchBtn">Submit</button>
             <div>
                 Hint:
                 <div id="youbikeSearchHint"></div>
@@ -32,4 +34,12 @@
             <table id="youbikeSearchResultTable"></table>
         </div>
     </div>
+
+    <script>
+        // register listener
+        document.getElementById("youbikeSearchBtn").addEventListener('click', function() {
+            // searchYoubike('youbikeSearchInput')
+            searchYoubike(document.getElementById('youbikeSearchInput'), createYoubikeResponseTable)
+        })
+    </script>
 </body>
