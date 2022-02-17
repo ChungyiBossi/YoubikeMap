@@ -395,7 +395,7 @@
             };
             locator.selectResultItemCallback = selectResultItem;
 
-            // Create a marker for each location.
+            // Create a init markers for each location.
             const markers = locator.locations.map(function(location, index) {
                 const marker = new google.maps.Marker({
                     position: location.coords,
@@ -407,6 +407,7 @@
                 });
                 return marker;
             });
+            locator.markers = markers;
 
             // Fit map to marker bounds.
             locator.updateBounds = function() {
@@ -506,7 +507,7 @@
             locator.geocoder = new google.maps.Geocoder();
 
             // Optional capability initialization --------------------------------------
-            initializeSearchInput(locator);
+            // initializeSearchInput(locator);
             initializeDistanceMatrix(locator);
             initializeDirections(locator);
             initializeDetails(locator);
@@ -538,7 +539,7 @@
             const searchButtonEl = document.getElementById('youbike-search-button');
 
             const nearEnoughStations = function(stations) {
-                var nearStations = stations.filter(function(station) {
+                return stations.filter(function(station) {
                     var bikeSLoc = {
                         'coords': {
                             'lat': parseFloat(station.lat),
@@ -547,28 +548,29 @@
                     }
                     return locator.getLocationDistance(bikeSLoc) <= 300;
                 })
-                var nearStationsMarker = nearStations.map(function(station) {
-                    let marker = new google.maps.Marker({
-                        position: new google.maps.LatLng({
-                            'lat': parseFloat(station.lat),
-                            'lng': parseFloat(station.lng)
-                        }),
-                        title: station.ar,
-                        map: locator.map,
-                    });
-                    marker.addListener('click', function() {
-                        locator.selectResultItemCallback(index, false, true);
-                    });
-                    return marker;
-                })
-                return nearStationsMarker
             }
 
-            function mapMarkerToLocationResult(locationMarker) {
+            function mapStationsToMarker(station) {
+
+                let marker = new google.maps.Marker({
+                    position: new google.maps.LatLng({
+                        'lat': parseFloat(station.lat),
+                        'lng': parseFloat(station.lng)
+                    }),
+                    title: station.ar,
+                    map: locator.map,
+                });
+                return marker;
+            }
+
+            function mapStationsToLocationResult(station) {
                 return {
-                    "title": locationMarker.getLabel(),
-                    "address1": locationMarker.getTitle(),
-                    "coords": locationMarker.getPosition(),
+                    "title": station.sna.replace('YouBike2.0_', ''),
+                    "address1": station.ar,
+                    "coords": {
+                        'lat': parseFloat(station.lat),
+                        'lng': parseFloat(station.lng)
+                    },
                     // "placeId": "ChIJQRJ5VmypQjQRwvCsSW8Y3UQ"  // how to get this ?
                 }
             }
@@ -586,25 +588,41 @@
                     'location': location
                 };
                 locator.searchLocationMarker = new google.maps.Marker({
+                    icon: { // https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerLabel
+                        path: "M 12,2 C 8.1340068,2 5,5.1340068 5,9 c 0,5.25 7,13 7,13 0,0 7,-7.75 7,-13 0,-3.8659932 -3.134007,-7 -7,-7 z",
+                        anchor: new google.maps.Point(12, 17),
+                        fillOpacity: 1,
+                        fillColor: '#FFFFFF',
+                        strokeWeight: 2,
+                        strokeColor: "green",
+                        scale: 2,
+                        labelOrigin: new google.maps.Point(12, 9)
+                    },
                     position: location,
                     map: locator.map,
-                    title: address,
+                    title: address
                 });
                 locator.map.panTo(locator.searchLocation.location)
 
-                // clear youbike marker
-                if (locator.searchYoubikeLocationMarker && locator.searchYoubikeLocationMarker.length >= 0) {
-                    locator.searchYoubikeLocationMarker.forEach(element => {
+                // clear youbike station markers
+                if (locator.markers && locator.markers.length >= 0) {
+                    locator.markers.forEach(element => {
                         element.setMap(null)
                     });
                 }
                 // mark stations
-                locator.searchYoubikeLocationMarker = nearEnoughStations(locator.youbikeStations);
-                if (locator.searchYoubikeLocationMarker) {
-                    // remove old station marks
-                    locator.locations = locator.searchYoubikeLocationMarker.map(mapMarkerToLocationResult);
+                let nearStations = nearEnoughStations(locator.youbikeStations);
+                locator.markers = nearStations.map(mapStationsToMarker);
+                if (locator.markers) {
+                    // marker click callback
+                    locator.markers.forEach(function(element, index) {
+                        element.addListener('click', function() {
+                            locator.selectResultItemCallback(index, false, true);
+                        })
+                    });
+                    // new results
+                    locator.locations = nearStations.map(mapStationsToLocationResult);
                 }
-
                 // update data
                 const addressParts = address.split(' ');
                 locator.userCountry = addressParts[addressParts.length - 1];
@@ -648,89 +666,6 @@
             // Initialize Autocomplete.
             initializeSearchInputAutocomplete(
                 locator, searchInputEl, geocodeSearch, resultHandler);
-        }
-
-        /** When the search input capability is enabled, initialize it. */
-        function initializeSearchInput(locator) { // need geocoder in different ways
-            const geocoder = locator.geocoder;
-            const geocodeCache = new Map(); // dictionary, not google map
-            const searchInputEl = document.getElementById('location-search-input');
-            const searchButtonEl = document.getElementById('location-search-button');
-
-            const updateSearchLocation = function(address, location) {
-                if (locator.searchLocationMarker) {
-                    locator.searchLocationMarker.setMap(null);
-                }
-                if (!location) {
-                    locator.searchLocation = null;
-                    return;
-                }
-                locator.searchLocation = {
-                    'address': address,
-                    'location': location
-                };
-
-                // new a marker for search result 
-                locator.searchLocationMarker = new google.maps.Marker({
-                    position: location,
-                    map: locator.map,
-                    title: address,
-                });
-
-                // pan location
-                locator.map.panTo(locator.searchLocation.location)
-
-                // Update the locator's idea of the user's country, used for units. Use
-                // `formatted_address` instead of the more structured `address_components`
-                // to avoid an additional billed call.
-                const addressParts = address.split(' ');
-                locator.userCountry = addressParts[addressParts.length - 1];
-
-                // Update map bounds to include the new location marker.
-                locator.updateBounds();
-
-                // Update the result list so we can sort it by proximity.
-                locator.renderResultsList();
-
-                locator.updateTravelTimes();
-
-                locator.clearDirections();
-            };
-
-            const geocodeSearch = function(query) {
-                if (!query) {
-                    return;
-                }
-
-                if (geocodeCache.has(query)) {
-                    const cacheResult = geocodeCache.get(query)
-                    updateSearchLocation(cacheResult.formatted_address, cacheResult.location);
-                    return;
-                }
-                const request = {
-                    address: query,
-                    bounds: locator.map.getBounds()
-                };
-
-                geocoder.geocode(request, function(results, status) {
-                    if (status === 'OK') {
-                        if (results.length > 0) {
-                            const result = results[0];
-                            geocodeCache.set(query, result);
-                            updateSearchLocation(result.formatted_address, result.location);
-                        }
-                    }
-                });
-            };
-
-            // Set up geocoding on the search input.
-            searchButtonEl.addEventListener('click', function() {
-                geocodeSearch(searchInputEl.value.trim());
-            });
-
-            // Initialize Autocomplete.
-            initializeSearchInputAutocomplete(
-                locator, searchInputEl, geocodeSearch, updateSearchLocation);
         }
 
         /** Add Autocomplete to the search input. */
@@ -1078,19 +1013,6 @@
         <div id="locations-panel">
             <div id="locations-panel-list">
                 <header>
-                    <!-- Find with google map -->
-                    <h1 class="search-title">
-                        <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg" /> Find a location near you
-                    </h1>
-                    <div class="search-input">
-                        <input id="location-search-input" placeholder="Enter your address or zip code">
-                        <div id="search-overlay-search" class="search-input-overlay search">
-                            <button id="location-search-button">
-                                <img class="icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg" alt="Search"/>
-                            </button>
-                        </div>
-                    </div>
-                    <br/>
                     <!-- Find Youbike -->
                     <h1 class="search-title">
                         <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg" /> Find a youbikes near you
