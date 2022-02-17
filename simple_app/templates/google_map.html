@@ -393,6 +393,7 @@
                     locator.map.panTo(locator.locations[locationIdx].coords);
                 }
             };
+            locator.selectResultItemCallback = selectResultItem;
 
             // Create a marker for each location.
             const markers = locator.locations.map(function(location, index) {
@@ -537,28 +538,39 @@
             const searchButtonEl = document.getElementById('youbike-search-button');
 
             const nearEnoughStations = function(stations) {
-
-                var nearStations = stations.forEach(function(station) {
+                var nearStations = stations.filter(function(station) {
                     var bikeSLoc = {
                         'coords': {
                             'lat': parseFloat(station.lat),
                             'lng': parseFloat(station.lng)
                         }
                     }
-                    var dis = locator.getLocationDistance(bikeSLoc)
-                    if (dis <= 1000) {
-
-                        // console.error()
-                        // console.error(dis, bikeSLoc.coords, locator.searchLocation.location);
-                        return new google.maps.Marker({
-                            position: new google.maps.LatLng(bikeSLoc.coords),
-                            map: locator.map,
-                            title: station.ar,
-                        })
-                    }
+                    return locator.getLocationDistance(bikeSLoc) <= 300;
                 })
+                var nearStationsMarker = nearStations.map(function(station) {
+                    let marker = new google.maps.Marker({
+                        position: new google.maps.LatLng({
+                            'lat': parseFloat(station.lat),
+                            'lng': parseFloat(station.lng)
+                        }),
+                        title: station.ar,
+                        map: locator.map,
+                    });
+                    marker.addListener('click', function() {
+                        locator.selectResultItemCallback(index, false, true);
+                    });
+                    return marker;
+                })
+                return nearStationsMarker
+            }
 
-                return nearStations
+            function mapMarkerToLocationResult(locationMarker) {
+                return {
+                    "title": locationMarker.getLabel(),
+                    "address1": locationMarker.getTitle(),
+                    "coords": locationMarker.getPosition(),
+                    // "placeId": "ChIJQRJ5VmypQjQRwvCsSW8Y3UQ"  // how to get this ?
+                }
             }
             const resultHandler = function(address, location) {
                 // search locations
@@ -579,15 +591,21 @@
                     title: address,
                 });
                 locator.map.panTo(locator.searchLocation.location)
-                console.warn(locator.searchLocation.location)
 
                 // clear youbike marker
-                // if (locator.searchYoubikeLocationMarker.length >= 0) {
-                //     locator.searchYoubikeLocationMarker.forEach(element => {
-                //         locator.searchYoubikeLocationMarker.setMap(null)
-                //     });
-                // }
+                if (locator.searchYoubikeLocationMarker && locator.searchYoubikeLocationMarker.length >= 0) {
+                    locator.searchYoubikeLocationMarker.forEach(element => {
+                        element.setMap(null)
+                    });
+                }
+                // mark stations
                 locator.searchYoubikeLocationMarker = nearEnoughStations(locator.youbikeStations);
+                if (locator.searchYoubikeLocationMarker) {
+                    // remove old station marks
+                    locator.locations = locator.searchYoubikeLocationMarker.map(mapMarkerToLocationResult);
+                }
+
+                // update data
                 const addressParts = address.split(' ');
                 locator.userCountry = addressParts[addressParts.length - 1];
                 locator.updateBounds();
@@ -595,7 +613,6 @@
                 locator.updateTravelTimes();
                 locator.clearDirections();
             }
-
 
             const geocodeSearch = function(query) {
                 if (!query) {
@@ -1100,7 +1117,7 @@
         <div id="map"></div>
     </div>
     <!-- Callback:initMap-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqlSsWo7uKpL7vvRxaIb-WxYLF4ontT28&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
 
 
 </body>
