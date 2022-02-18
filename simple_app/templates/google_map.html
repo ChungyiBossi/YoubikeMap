@@ -415,8 +415,8 @@
                 if (locator.searchLocationMarker) {
                     bounds.extend(locator.searchLocationMarker.getPosition());
                 }
-                for (let i = 0; i < markers.length; i++) {
-                    bounds.extend(markers[i].getPosition());
+                for (let i = 0; i < locator.markers.length; i++) {
+                    bounds.extend(locator.markers[i].getPosition());
                 }
                 locator.map.fitBounds(bounds);
             };
@@ -507,7 +507,6 @@
             locator.geocoder = new google.maps.Geocoder();
 
             // Optional capability initialization --------------------------------------
-            // initializeSearchInput(locator);
             initializeDistanceMatrix(locator);
             initializeDirections(locator);
             initializeDetails(locator);
@@ -613,6 +612,7 @@
                 // mark stations
                 let nearStations = nearEnoughStations(locator.youbikeStations);
                 locator.markers = nearStations.map(mapStationsToMarker);
+                console.log('markers', locator.markers)
                 if (locator.markers) {
                     // marker click callback
                     locator.markers.forEach(function(element, index) {
@@ -626,7 +626,7 @@
                 // update data
                 const addressParts = address.split(' ');
                 locator.userCountry = addressParts[addressParts.length - 1];
-                locator.updateBounds();
+                locator.updateBounds(); // if you want to zoom out the map 
                 locator.renderResultsList();
                 locator.updateTravelTimes();
                 locator.clearDirections();
@@ -1039,7 +1039,7 @@
         <div id="map"></div>
     </div>
     <!-- Callback:initMap-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
 
 
 </body>
