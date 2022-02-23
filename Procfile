@@ -1,1 +1,1 @@
-web: ./setup.sh
+worker: ./setup.sh
