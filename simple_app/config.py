@@ -1,0 +1,4 @@
+import os
+DEBUG = True
+GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+LINE_CHANNEL_ACCESS_TOKEN = os.environ['LINE_CHANNEL_ACCESS_TOKEN']

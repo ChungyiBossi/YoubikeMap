@@ -20,429 +20,50 @@
     <title>Locator</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <!-- Javascript -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <!-- Handlebars -->
     <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
-    <!-- Ubike -->
-    <script src="file:///Users/chungilin/RaspberryPi/simple_app/static/search_youbike.js"></script>
+    <script src="{{url_for('static', filename='javascript/search_youbike.js')}}"></script>
+    <script src="{{url_for('static', filename='javascript/google_map.js')}}"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        
-        #map-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            font-family: "Roboto", sans-serif;
-            box-sizing: border-box;
-        }
-        
-        #map-container button {
-            background: none;
-            color: inherit;
-            border: none;
-            padding: 0;
-            font: inherit;
-            font-size: inherit;
-            cursor: pointer;
-        }
-        
-        #map {
-            position: absolute;
-            left: 22em;
-            top: 0;
-            right: 0;
-            bottom: 0;
-        }
-        
-        #locations-panel {
-            position: absolute;
-            left: 0;
-            width: 22em;
-            top: 0;
-            bottom: 0;
-            overflow-y: auto;
-            background: white;
-            padding: 0.5em;
-            box-sizing: border-box;
-        }
-        
-        @media only screen and (max-width: 876px) {
-            #map {
-                left: 0;
-                bottom: 50%;
-            }
-            #locations-panel {
-                top: 50%;
-                right: 0;
-                width: unset;
-            }
-        }
-        
-        #locations-panel-list>header {
-            padding: 1.4em 1.4em 0 1.4em;
-        }
-        
-        #locations-panel-list h1.search-title {
-            font-size: 1em;
-            font-weight: 500;
-            margin: 0;
-        }
-        
-        #locations-panel-list h1.search-title>img {
-            vertical-align: bottom;
-            margin-top: -1em;
-        }
-        
-        #locations-panel-list .search-input {
-            width: 100%;
-            margin-top: 0.8em;
-            position: relative;
-        }
-        
-        #locations-panel-list .search-input input {
-            width: 100%;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            border-radius: 0.3em;
-            height: 2.2em;
-            box-sizing: border-box;
-            padding: 0 2.5em 0 1em;
-            font-size: 1em;
-        }
-        
-        #locations-panel-list .search-input-overlay {
-            position: absolute;
-        }
-        
-        #locations-panel-list .search-input-overlay.search {
-            right: 2px;
-            top: 2px;
-            bottom: 2px;
-            width: 2.4em;
-        }
-        
-        #locations-panel-list .search-input-overlay.search button {
-            width: 100%;
-            height: 100%;
-            border-radius: 0.2em;
-            color: black;
-            background: transparent;
-        }
-        
-        #locations-panel-list .search-input-overlay.search .icon {
-            margin-top: 0.05em;
-            vertical-align: top;
-        }
-        
-        #locations-panel-list .section-name {
-            font-weight: 500;
-            font-size: 0.9em;
-            margin: 1.8em 0 1em 1.5em;
-        }
-        
-        #locations-panel-list .location-result {
-            position: relative;
-            padding: 0.8em 3.5em 0.8em 1.4em;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-            cursor: pointer;
-        }
-        
-        #locations-panel-list .location-result:first-of-type {
-            border-top: 1px solid rgba(0, 0, 0, 0.12);
-        }
-        
-        #locations-panel-list .location-result:last-of-type {
-            border-bottom: none;
-        }
-        
-        #locations-panel-list .location-result.selected {
-            outline: 2px solid #4285f4;
-        }
-        
-        #locations-panel-list button.select-location {
-            margin-bottom: 0.6em;
-            text-align: left;
-        }
-        
-        #locations-panel-list .location-result h2.name {
-            font-size: 1em;
-            font-weight: 500;
-            margin: 0;
-        }
-        
-        #locations-panel-list .location-result .address {
-            font-size: 0.9em;
-            margin-bottom: 0.5em;
-        }
-        
-        #locations-panel-list .location-result .details-button {
-            font-size: 0.9em;
-            color: #7e7efd;
-        }
-        
-        #locations-panel-list .location-result .distance {
-            position: absolute;
-            top: 0.9em;
-            right: 0;
-            text-align: center;
-            font-size: 0.9em;
-            width: 5em;
-        }
-        
-        #locations-panel-list .show-directions {
-            position: absolute;
-            right: 1.2em;
-            top: 2.3em;
-        }
-        
-        #location-results-list {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-        /* ------------- DETAILS PANEL ------------------------------- */
-        
-        #locations-panel-details {
-            padding: 1.4em;
-            box-sizing: border-box;
-            display: none;
-        }
-        
-        #locations-panel-details .back-button {
-            font-size: 1em;
-            font-weight: 500;
-            color: #7e7efd;
-            display: block;
-            text-decoration: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            font-family: inherit;
-        }
-        
-        #locations-panel-details .back-button .icon {
-            width: 20px;
-            height: 20px;
-            vertical-align: bottom;
-            /* Match link color #7e7efd */
-            filter: invert(65%) sepia(87%) saturate(4695%) hue-rotate(217deg) brightness(105%) contrast(98%);
-        }
-        
-        #locations-panel-details>header {
-            text-align: center;
-        }
-        
-        #locations-panel-details .banner {
-            margin-top: 1em;
-        }
-        
-        #locations-panel-details h2 {
-            font-size: 1.1em;
-            font-weight: 500;
-            margin-bottom: 0.3em;
-        }
-        
-        #locations-panel-details .distance {
-            font-size: 0.9em;
-            text-align: center;
-        }
-        
-        #locations-panel-details .address {
-            text-align: center;
-            font-size: 0.9em;
-            margin-top: 1.3em;
-        }
-        
-        #locations-panel-details .atmosphere {
-            text-align: center;
-            font-size: 0.9em;
-            margin: 0.8em 0;
-        }
-        
-        #locations-panel-details .star-rating-numeric {
-            color: #555;
-        }
-        
-        #locations-panel-details .star-icon {
-            width: 1.2em;
-            height: 1.2em;
-            margin-right: -0.3em;
-            margin-top: -0.08em;
-            vertical-align: top;
-            filter: invert(88%) sepia(60%) saturate(2073%) hue-rotate(318deg) brightness(93%) contrast(104%);
-        }
-        
-        #locations-panel-details .star-icon:last-of-type {
-            margin-right: 0.2em;
-        }
-        
-        #locations-panel-details .price-dollars {
-            color: #555;
-        }
-        
-        #locations-panel-details hr {
-            height: 1px;
-            color: rgba(0, 0, 0, 0.12);
-            background-color: rgba(0, 0, 0, 0.12);
-            border: none;
-            margin-bottom: 1em;
-        }
-        
-        #locations-panel-details .contact {
-            font-size: 0.9em;
-            margin: 0.8em 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        #locations-panel-details .contact .icon {
-            flex: 0 0 auto;
-            width: 1.5em;
-            height: 1.5em;
-        }
-        
-        #locations-panel-details .contact .right {
-            padding: 0.1em 0 0 1em;
-        }
-        
-        #locations-panel-details a {
-            text-decoration: none;
-            color: #7e7efd;
-        }
-        
-        #locations-panel-details .hours .weekday {
-            display: inline-block;
-            width: 5em;
-        }
-        
-        #locations-panel-details .website a {
-            white-space: nowrap;
-            display: inline-block;
-            overflow: hidden;
-            max-width: 16em;
-            text-overflow: ellipsis;
-        }
-        
-        #locations-panel-details p.attribution {
-            color: #777;
-            margin: 0;
-            font-size: 0.8em;
-            font-style: italic;
-        }
-    </style>
+    <link href="{{url_for('static', filename='css/google_map.css')}}" rel="stylesheet">
     <script>
-        'use strict';
-
-        /** Hide a DOM element. */
-        function hideElement(el) {
-            el.style.display = 'none';
-        }
-
-        /** Show a DOM element that has been hidden. */
-        function showElement(el) {
-            el.style.display = 'block';
-        }
-
-        function mapStationsToMarker(googleMapObj, station) {
-            let marker = new google.maps.Marker({
-                position: new google.maps.LatLng({
-                    'lat': parseFloat(station.lat),
-                    'lng': parseFloat(station.lng)
-                }),
-                title: station.ar,
-                map: googleMapObj,
-            });
-            return marker;
-        }
-
-        function mapStationsToLocationResult(station) {
-            return {
-                "title": station.sna.replace('YouBike2.0_', ''),
-                "address1": station.ar,
+        const CONFIGURATION = {
+            "locations": [{
+                "title": "大橋頭站",
+                "address1": "10357台灣台北市大同區",
                 "coords": {
-                    'lat': parseFloat(station.lat),
-                    'lng': parseFloat(station.lng)
+                    "lat": 25.06323452393011,
+                    "lng": 121.51357267790986
                 },
-                // "placeId": "ChIJQRJ5VmypQjQRwvCsSW8Y3UQ"  // how to get this ?
-            }
-        }
-
-        const youbikeStationLocations = function(callback) {
-            var xmlhttp = createHttpRequestor()
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    callback(JSON.parse(this.responseText));
-                }
-            }
-            xmlhttp.open("GET", "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json", true);
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xmlhttp.send();
-        }
-
-        function searchResultHandler(locator, address, location) {
-            // search locations
-            if (locator.searchLocationMarker) {
-                locator.searchLocationMarker.setMap(null); // clear marker
-            }
-            if (!location) {
-                locator.searchLocation = null;
-                return;
-            }
-            locator.searchLocation = {
-                'address': address,
-                'location': location
-            };
-            locator.searchLocationMarker = new google.maps.Marker({
-                icon: { // https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerLabel
-                    path: "M 12,2 C 8.1340068,2 5,5.1340068 5,9 c 0,5.25 7,13 7,13 0,0 7,-7.75 7,-13 0,-3.8659932 -3.134007,-7 -7,-7 z",
-                    anchor: new google.maps.Point(12, 17),
-                    fillOpacity: 1,
-                    fillColor: '#FFFFFF',
-                    strokeWeight: 2,
-                    strokeColor: "green",
-                    scale: 2,
-                    labelOrigin: new google.maps.Point(12, 9)
+                "placeId": "ChIJQRJ5VmypQjQRwvCsSW8Y3UQ"
+            }, {
+                "title": "臺北市大同區戶政事務所",
+                "address1": "103台灣台北市大同区昌吉街57號103226 3樓之1",
+                "coords": {
+                    "lat": 25.066132280529825,
+                    "lng": 121.51508184907382
                 },
-                position: location,
-                map: locator.map,
-                title: address
-            });
-            locator.map.panTo(locator.searchLocation.location)
+                "placeId": "ChIJLdFka0epQjQRgqpWnsYIOhE"
+            }],
+            "mapOptions": {
+                "center": {
+                    "lat": 38.0,
+                    "lng": -100.0
+                },
+                "fullscreenControl": true,
+                "mapTypeControl": false,
+                "streetViewControl": false,
+                "zoom": 4,
+                "zoomControl": true,
+                "maxZoom": 17
+            },
+            "mapsApiKey": "AIzaSyDqlSsWo7uKpL7vvRxaIb-WxYLF4ontT28"
+        };
 
-            // clear youbike station markers
-            if (locator.markers && locator.markers.length >= 0) {
-                locator.markers.forEach(element => {
-                    element.setMap(null)
-                });
-            }
-            // mark stations
-            let nearStations = locator.nearEnoughStations(locator.youbikeStations);
-            locator.markers = nearStations.map(element => mapStationsToMarker(locator.map, element));
-            if (locator.markers) {
-                // marker click callback
-                locator.markers.forEach(function(element, index) {
-                    element.addListener('click', function() {
-                        locator.selectResultItemCallback(index, false, true);
-                    })
-                });
-                // new results
-                locator.locations = nearStations.map(mapStationsToLocationResult);
-            }
-            // update data
-            const addressParts = address.split(' ');
-            locator.userCountry = addressParts[addressParts.length - 1];
-            locator.updateBounds(); // if you want to zoom out the map 
-            locator.renderResultsList();
-            locator.updateTravelTimes();
-            locator.clearDirections();
+        function initMap() {
+            new LocatorPlus(CONFIGURATION);
         }
-
         /**
          * Defines an instance of the Locator+ solution, to be instantiated
          * when the Maps library is loaded.
@@ -559,7 +180,7 @@
                         return locator.getLocationDistance(a) - locator.getLocationDistance(b);
                     });
                 } else {
-                    sectionNameEl.textContent = `Suggest Startng Points: (${locations.length})`;
+                    sectionNameEl.textContent = `Suggest Starting Points: (${locations.length})`;
                 }
                 const resultItemContext = {
                     locations: locations,
@@ -621,289 +242,10 @@
             // // Initial render of results -----------------------------------------------
             locator.renderResultsList();
         }
-
-        /** Search youbike locations  **/
-        function initializeYoubikeSearchInput(locator) {
-            const geocoder = locator.geocoder;
-            const youbikeGeocodeCache = new Map();
-            const searchInputEl = document.getElementById('youbike-search-input');
-            const searchButtonEl = document.getElementById('youbike-search-button');
-
-            const geocodeSearch = function(query) {
-                if (!query) {
-                    return;
-                }
-
-                if (youbikeGeocodeCache.has(query)) {
-                    const cacheResult = youbikeGeocodeCache.get(query)
-                    searchResultHandler(locator, cacheResult.formatted_address, cacheResult.location);
-                    return;
-                }
-                const request = {
-                    address: query,
-                    bounds: locator.map.getBounds()
-                };
-
-                geocoder.geocode(request, function(results, status) {
-                    if (status === 'OK') {
-                        if (results.length > 0) {
-                            const result = results[0];
-                            youbikeGeocodeCache.set(query, result);
-                            searchResultHandler(locator, result.formatted_address, result.location);
-                        }
-                    }
-                });
-            };
-
-            // Set up geocoding on the search input.
-            searchButtonEl.addEventListener('click', function() {
-                geocodeSearch(searchInputEl.value.trim());
-            });
-
-            // Initialize Autocomplete.
-            initializeSearchInputAutocomplete(
-                locator, searchInputEl, geocodeSearch, searchResultHandler);
-        }
-
-        /** Add Autocomplete to the search input. */
-        function initializeSearchInputAutocomplete(
-            locator, searchInputEl, fallbackSearch, searchLocationUpdater) {
-            // Set up Autocomplete on the search input. Bias results to map viewport.
-            const autocomplete = new google.maps.places.Autocomplete(searchInputEl, {
-                types: ['geocode'],
-                fields: ['place_id', 'formatted_address', 'geometry.location']
-            });
-            autocomplete.bindTo('bounds', locator.map);
-            autocomplete.addListener('place_changed', function() {
-                const placeResult = autocomplete.getPlace();
-                if (!placeResult.geometry) {
-                    // Hitting 'Enter' without selecting a suggestion will result in a
-                    // placeResult with only the text input value as the 'name' field.
-                    fallbackSearch(placeResult.name);
-                    return;
-                }
-                searchLocationUpdater(
-                    locator, placeResult.formatted_address, placeResult.geometry.location);
-            });
-        }
-
-        /** Initialize Distance Matrix for the locator. */
-        function initializeDistanceMatrix(locator) {
-            const distanceMatrixService = new google.maps.DistanceMatrixService();
-
-            // Annotate travel times to the selected location using Distance Matrix.
-            locator.updateTravelTimes = function() {
-                if (!locator.searchLocation) return;
-
-                const units = (locator.userCountry === 'USA') ?
-                    google.maps.UnitSystem.IMPERIAL :
-                    google.maps.UnitSystem.METRIC;
-                const request = {
-                    origins: [locator.searchLocation.location],
-                    destinations: locator.locations.map(function(x) {
-                        return x.coords;
-                    }),
-                    travelMode: google.maps.TravelMode.DRIVING,
-                    unitSystem: units,
-                };
-                const callback = function(response, status) {
-                    if (status === 'OK') {
-                        const distances = response.rows[0].elements;
-                        for (let i = 0; i < distances.length; i++) {
-                            const distResult = distances[i];
-                            let travelDistanceText, travelDistanceValue;
-                            if (distResult.status === 'OK') {
-                                travelDistanceText = distResult.distance.text;
-                                travelDistanceValue = distResult.distance.value;
-                            }
-                            const location = locator.locations[i];
-                            location.travelDistanceText = travelDistanceText;
-                            location.travelDistanceValue = travelDistanceValue;
-                        }
-
-                        // Re-render the results list, in case the ordering has changed.
-                        locator.renderResultsList();
-                    }
-                };
-                distanceMatrixService.getDistanceMatrix(request, callback);
-            };
-        }
-
-        /** Initialize Directions service for the locator. */
-        function initializeDirections(locator) {
-            const directionsCache = new Map();
-            const directionsService = new google.maps.DirectionsService();
-            const directionsRenderer = new google.maps.DirectionsRenderer({
-                suppressMarkers: true,
-            });
-
-            // Update directions displayed from the search location to
-            // the selected location on the map.
-            locator.updateDirections = function() {
-                if (!locator.searchLocation || (locator.selectedLocationIdx == null)) {
-                    return;
-                }
-                const cacheKey = JSON.stringify(
-                    [locator.searchLocation.location, locator.selectedLocationIdx]);
-                if (directionsCache.has(cacheKey)) {
-                    const directions = directionsCache.get(cacheKey);
-                    directionsRenderer.setMap(locator.map);
-                    directionsRenderer.setDirections(directions);
-                    return;
-                }
-                const request = {
-                    origin: locator.searchLocation.location,
-                    destination: locator.locations[locator.selectedLocationIdx].coords,
-                    travelMode: google.maps.TravelMode.WALKING
-                };
-                directionsService.route(request, function(response, status) {
-                    if (status === 'OK') {
-                        directionsRenderer.setMap(locator.map);
-                        directionsRenderer.setDirections(response);
-                        directionsCache.set(cacheKey, response);
-                    }
-                });
-            };
-
-            locator.clearDirections = function() {
-                directionsRenderer.setMap(null);
-            };
-        }
-
-        /** Initialize Place Details service and UI for the locator. */
-        function initializeDetails(locator) {
-            const panelDetailsEl = document.getElementById('locations-panel-details');
-            const detailsService = new google.maps.places.PlacesService(locator.map);
-
-            const detailsTemplate = Handlebars.compile(
-                document.getElementById('locator-details-tmpl').innerHTML);
-
-            const renderDetails = function(context) {
-                panelDetailsEl.innerHTML = detailsTemplate(context);
-                panelDetailsEl.querySelector('.back-button')
-                    .addEventListener('click', hideDetails);
-            };
-
-            const hideDetails = function() {
-                showElement(locator.panelListEl);
-                hideElement(panelDetailsEl);
-            };
-
-            locator.showDetails = function(locationIndex) {
-                const location = locator.locations[locationIndex];
-                const context = {
-                    location
-                };
-
-                // Helper function to create a fixed-size array.
-                const initArray = function(arraySize) {
-                    const array = [];
-                    while (array.length < arraySize) {
-                        array.push(0);
-                    }
-                    return array;
-                };
-
-                if (location.placeId) {
-                    const request = {
-                        placeId: location.placeId,
-                        fields: [
-                            'formatted_phone_number', 'website', 'opening_hours', 'url',
-                            'utc_offset_minutes', 'price_level', 'rating', 'user_ratings_total'
-                        ]
-                    };
-                    detailsService.getDetails(request, function(place, status) {
-                        if (status == google.maps.places.PlacesServiceStatus.OK) {
-                            if (place.opening_hours) {
-                                const daysHours =
-                                    place.opening_hours.weekday_text.map(e => e.split(/\:\s+/))
-                                    .map(e => ({
-                                        'days': e[0].substr(0, 3),
-                                        'hours': e[1]
-                                    }));
-
-                                for (let i = 1; i < daysHours.length; i++) {
-                                    if (daysHours[i - 1].hours === daysHours[i].hours) {
-                                        if (daysHours[i - 1].days.indexOf('-') !== -1) {
-                                            daysHours[i - 1].days =
-                                                daysHours[i - 1].days.replace(/\w+$/, daysHours[i].days);
-                                        } else {
-                                            daysHours[i - 1].days += ' - ' + daysHours[i].days;
-                                        }
-                                        daysHours.splice(i--, 1);
-                                    }
-                                }
-                                place.openingHoursSummary = daysHours;
-                            }
-                            if (place.rating) {
-                                const starsOutOfTen = Math.round(2 * place.rating);
-                                const fullStars = Math.floor(starsOutOfTen / 2);
-                                const halfStars = fullStars !== starsOutOfTen / 2 ? 1 : 0;
-                                const emptyStars = 5 - fullStars - halfStars;
-
-                                // Express stars as arrays to make iterating in Handlebars easy.
-                                place.fullStarIcons = initArray(fullStars);
-                                place.halfStarIcons = initArray(halfStars);
-                                place.emptyStarIcons = initArray(emptyStars);
-                            }
-                            if (place.price_level) {
-                                place.dollarSigns = initArray(place.price_level);
-                            }
-                            if (place.website) {
-                                const url = new URL(place.website);
-                                place.websiteDomain = url.hostname;
-                            }
-
-                            context.place = place;
-                            renderDetails(context);
-                        }
-                    });
-                }
-                renderDetails(context);
-                hideElement(locator.panelListEl);
-                showElement(panelDetailsEl);
-            };
-        }
-    </script>
-    <script>
-        const CONFIGURATION = {
-            "locations": [{
-                "title": "大橋頭站",
-                "address1": "10357台灣台北市大同區",
-                "coords": {
-                    "lat": 25.06323452393011,
-                    "lng": 121.51357267790986
-                },
-                "placeId": "ChIJQRJ5VmypQjQRwvCsSW8Y3UQ"
-            }, {
-                "title": "臺北市大同區戶政事務所",
-                "address1": "103台灣台北市大同区昌吉街57號103226 3樓之1",
-                "coords": {
-                    "lat": 25.066132280529825,
-                    "lng": 121.51508184907382
-                },
-                "placeId": "ChIJLdFka0epQjQRgqpWnsYIOhE"
-            }],
-            "mapOptions": {
-                "center": {
-                    "lat": 38.0,
-                    "lng": -100.0
-                },
-                "fullscreenControl": true,
-                "mapTypeControl": false,
-                "streetViewControl": false,
-                "zoom": 4,
-                "zoomControl": true,
-                "maxZoom": 17
-            },
-            "mapsApiKey": "AIzaSyDqlSsWo7uKpL7vvRxaIb-WxYLF4ontT28"
-        };
-
-        function initMap() {
-            new LocatorPlus(CONFIGURATION);
-        }
     </script>
 
+    <!-- Use raw to tell jinjia2 ignore handler bars template -->
+    {% raw %}
     <!-- handlebars template-->
     <script id="locator-result-items-tmpl" type="text/x-handlebars-template">
         {{#each locations}}
@@ -1001,6 +343,7 @@
         <p class="attribution">{{{this}}}</p>
         {{/each}} {{/if}}
     </script>
+    {% endraw %}
 
     <script></script>
 </head>
@@ -1036,7 +379,7 @@
         <div id="map"></div>
     </div>
     <!-- Callback:initMap-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ config['GOOGLE_API_KEY'] }}&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
 
 
 </body>
