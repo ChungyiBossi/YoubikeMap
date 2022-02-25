@@ -15,42 +15,53 @@ def search_hint(currentWord):
 def receiveLineMessage(jsonData):
 
     for event in jsonData['events']:
-        userType = event["source"]["type"]
         userId = event["source"]["userId"]  # 推送到前端去需要userId
+        replyToken = event["replyToken"]
 
         # 進行訊息(message or follow)分支控制流成
         if event['type'] == 'message':
-
-            # 取出前端Line送出文字訊息
-            msgType = event["message"]["type"]  # 確定是一個text類型
             message = event["message"]["text"]  # 使用者端提問文字串內容
             sendPushMessage(userId, message)
 
         # 新增為好友的解除
         if event['type'] == 'follow':
             greeting = '歡迎你 的加入 這是一個物聯網自然語言服務平台!!!'
-            sendPushMessage(userId, greeting)
+            sendReplyMessage(replyToken, greeting)
 
     return '訊息處理結束'
 
 
-def sendPushMessage(userId, message):
-    # 1.需要Web Client一個Request物件(或者功能)
-    # 2 send push message網址
-    pushURL = 'https://api.line.me/v2/bot/message/push'
+def getLineReqHeader():
     lineChannelAccessToken = current_app.config['LINE_CHANNEL_ACCESS_TOKEN']
-    # 設定dict 設定Content-Type and Authorization
-    headers = {
+    return {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {lineChannelAccessToken}"
     }
+
+
+def sendReplyMessage(replyToken, message):
+    replyUrl = current_app.config['LINE_REPLY_API']
+    body = {
+        "replyToken": replyToken,
+        "messages": [
+            {
+                "type": 'text',
+                "text": f'葛格回覆說:{message}'
+            }
+        ]
+    }
+    re.post(replyUrl, headers=getLineReqHeader(), data=json.dumps(body))
+
+
+def sendPushMessage(userId, message):
+    pushURL = current_app.config['LINE_PUSH_API']
     body = {
         "to": userId,
         "messages": [
             {
                 "type": 'text',
-                "text": f'我說:{message}'
+                "text": f'葛格推播說:{message}'
             }
         ]
     }
-    re.post(pushURL, headers=headers, data=json.dumps(body))
+    re.post(pushURL, headers=getLineReqHeader(), data=json.dumps(body))
