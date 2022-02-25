@@ -18,14 +18,16 @@ def receiveLineMessage(jsonData):
         userId = event["source"]["userId"]  # 推送到前端去需要userId
         replyToken = event["replyToken"]
 
+        profile = getUserProfile(userId).json()
         # 進行訊息(message or follow)分支控制流成
         if event['type'] == 'message':
             message = event["message"]["text"]  # 使用者端提問文字串內容
-            sendPushMessage(userId, message)
+            sendReplyMessage(replyToken, message)
 
         # 新增為好友的解除
         if event['type'] == 'follow':
-            greeting = '歡迎你 的加入 這是一個物聯網自然語言服務平台!!!'
+            userName = profile.get('displayName', '您')
+            greeting = f'歡迎 {userName} 的加入 這是一個物聯網自然語言服務平台!!!'
             sendReplyMessage(replyToken, greeting)
 
     return '訊息處理結束'
@@ -39,6 +41,11 @@ def getLineReqHeader():
     }
 
 
+def getUserProfile(userId: str):
+
+    return re.get(current_app.config['LINE_PROFILE_API']+userId, headers=getLineReqHeader())
+
+
 def sendReplyMessage(replyToken, message):
     replyUrl = current_app.config['LINE_REPLY_API']
     body = {
@@ -50,7 +57,8 @@ def sendReplyMessage(replyToken, message):
             }
         ]
     }
-    re.post(replyUrl, headers=getLineReqHeader(), data=json.dumps(body))
+    resp = re.post(replyUrl, headers=getLineReqHeader(), data=json.dumps(body))
+    return resp.status_code
 
 
 def sendPushMessage(userId, message):
@@ -64,4 +72,5 @@ def sendPushMessage(userId, message):
             }
         ]
     }
-    re.post(pushURL, headers=getLineReqHeader(), data=json.dumps(body))
+    resp = re.post(pushURL, headers=getLineReqHeader(), data=json.dumps(body))
+    return resp.status_code
