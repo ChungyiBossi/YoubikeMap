@@ -1,6 +1,8 @@
 import os
 from flask import Flask
 from .blueprint import simple_route
+from .postgreSQL.session import create_sql_scoped_session, create_engine
+from .postgreSQL.tables import LineUser
 
 def create_flask_app(test_config=None):
     # create and configure the app
@@ -14,5 +16,7 @@ def create_flask_app(test_config=None):
         app.logger.warn("Setup Your GOOGLE API Key and Line Channel ACT as envirenment variable correctly")
     # register blueprint
     app.register_blueprint(simple_route)
+    # create db
+    app.db_engine = create_engine(url=app.config.get('POSTGRESQL_DB_URL'))
 
     return app
