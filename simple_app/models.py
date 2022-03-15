@@ -42,7 +42,7 @@ def handleLineMessage(jsonData):
             greeting = f'歡迎 {userName} 的加入 這是一個葛格煮平台!!!'
             sendReplyMessage(replyToken, generateMessageBody(greeting))
 
-    # merge data
+    # merge db data
     for uid, d in update_line_user_data.items():
         table = update_line_user_data[uid]['type']
         name =  update_line_user_data[uid]['info'].get('displayName', "")
