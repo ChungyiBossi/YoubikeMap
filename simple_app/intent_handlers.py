@@ -1,16 +1,109 @@
-## intent handlers
+from flask import current_app
+from collections import defaultdict
+memory = defaultdict(lambda: dict())
 
-def userHelpIntentHandler(message):
-    textResponse = """
-    <指令集>
-    幫助: !help
-    葛格今天煮什麼: !cook
-    小寶貝美甲預約: !nailbook
-    腳踏車站搜尋: !youbike
-    """
-    return {
+def updateMemory(userId, **kwargs):
+    for k, v in kwargs.items():
+        memory[userId][k] = v
+
+
+def findPlaceHandler(userId, latlng):
+    message = memory[userId].get('search_input_message', "restaurant")
+    result = current_app.google_client.find_place(message, latlng)
+    if result['status'] == "OK":
+        candidate = result['candidates'][0]
+        print(f"Find Place: *{candidate}*")
+        return [
+            {
+                "type": "text",
+                "text": f"找到了！"
+            },
+            {
+                "type": "location",
+                "title": candidate['name'],
+                "address": candidate['formatted_address'],
+                "latitude": candidate['geometry']['location']['lat'],
+                "longitude": candidate['geometry']['location']['lng']
+            }
+        ]
+    else:
+        return [
+            {
+                "type": "text",
+                "text": f"我找不到此地點附近的 *{message}*, 要不要換一個方式說呢?"
+            }
+        ]
+
+
+def requestLocationHandler(userId, message):
+    if message:
+        updateMemory(userId, {'search_input_message': message})
+        print(f"Find *{message}*, request User Location")
+        return [{
+            "type": "text",
+            "text": f"請選擇您欲查詢 {message} 的位置",
+            "quickReply": {
+                "items": [
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "location",
+                            "label": "選擇欲查詢的地點"
+                        }
+                    }
+                ]
+            }
+        }]
+    else:
+        return [{
+            "type": "text",
+            "text": f"要查什麼呢?",
+            "quickReply": {
+                "items": [
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": "餐廳",
+                            "text": "找 餐廳"
+                        }
+                    },
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": "咖啡廳",
+                            "text": "找 咖啡廳"
+                        }
+                    },
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": "電影院",
+                            "text": "找 電影院"
+                        }
+                    }
+                    
+                ]
+            }
+        }]
+
+
+
+def defaultHandler(userId, message):
+    return [{
         "type": 'text',
-        "text": f'葛格幫:{textResponse}'
-    }
+        "text": f'葛格回覆說:{message}'
+    }]
 
 
+def userHelpIntentHandler(userId, message):
+    textResponse = """
+    幫助: !help
+    找地點: !find 餐廳/咖啡廳/電影院
+    """
+    return [{
+        "type": 'text',
+        "text": f'葛格回覆說:{textResponse}'
+    }]

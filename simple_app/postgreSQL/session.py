@@ -5,7 +5,7 @@ from sqlalchemy.orm import (
 )
 
 def create_sql_engine(url):
-    return create_engine(db_url, echo=True)
+    return create_engine(url, echo=True)
 
 def create_sql_scoped_session(engine=None):
     if not engine:

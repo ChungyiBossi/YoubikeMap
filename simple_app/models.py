@@ -8,16 +8,42 @@ from .postgreSQL.session import create_sql_scoped_session
 from .postgreSQL.tables import LineUser
 from flask import current_app
 
+intent_map = {
+    # intent type: keywords
+    "主頁選單": {
+        'keywords': ['!help', '!幫助', '!主頁'],
+        'handler': userHelpIntentHandler
+    },
+    "找地點": {
+        'keywords': ["幫我找", "幫找", "找", "!find"],
+        'handler': requestLocationHandler
+    },
+    "default": {
+        'keywords': [],
+        'handler': defaultHandler
+    }
+}
 
-# 測試用，已改用line bot做設定
-def generateMessageBody(message):
-    if message == "!help":
-        return [userHelpIntentHandler(message)]
+
+def simpleIntentClassifier(userId, rawMsg):
+    ## TODO: NER
+    parts = rawMsg.split()
+
+    if len(parts) >= 2:
+        # 合併後面的訊息
+        intent_word, intent_msg = parts[0], "".join(parts[1:])
+        # TODO: TRUELY Intent classifier
     else:
-        return [{
-            "type": 'text',
-            "text": f'葛格回覆說:{message}'
-        }]
+        intent_word, intent_msg = parts[0], ""
+    
+    print("Parts: ", parts, "Intent: ", intent_word, "Intent Msg: ", intent_msg)
+
+    for intent_type, intent_info in intent_map.items():
+        keywords, handler = intent_info['keywords'], intent_info['handler']
+        for k in keywords:
+            if k in intent_word:  # 用起頭字判定意圖
+                return intent_type, handler(userId, intent_msg)
+    return "default", defaultHandler(userId, rawMsg)
 
 
 def handleLineMessage(jsonData):
@@ -33,22 +59,28 @@ def handleLineMessage(jsonData):
         }
         replyToken = event["replyToken"]
         if event['type'] == 'message':
-            message = event["message"]["text"]  # 使用者端提問文字串內容
-            sendReplyMessage(replyToken, generateMessageBody(message))
-            sendPushMessage(userId, generateMessageBody(message))  # debug
+            msg_body = event['message']
 
-        if event['type'] == 'follow':
+            if msg_body['type'] == 'text':
+                message = msg_body["text"]  # 使用者端提問文字串內容
+                _, response = simpleIntentClassifier(userId, message)
+                sendReplyMessage(replyToken, response)
+                sendPushMessage(userId, response)  # debug
+            elif msg_body['type'] == 'location':
+                latlng = msg_body['latitude'], msg_body['longitude']
+                response = findPlaceHandler(userId, latlng)
+                sendReplyMessage(replyToken, response)
+                sendPushMessage(userId, response)  # debug, 不透過webhook
+
+        elif event['type'] == 'follow':
             userName = profile.get('displayName', '您')
             greeting = f'歡迎 {userName} 的加入 這是一個葛格煮平台!!!'
-            sendReplyMessage(replyToken, generateMessageBody(greeting))
+            sendReplyMessage(replyToken, defaultHandler(userId, greeting))
 
     # merge db data
     for uid, d in update_line_user_data.items():
         table = update_line_user_data[uid]['type']
-        name =  update_line_user_data[uid]['info'].get('displayName', "")
+        name = update_line_user_data[uid]['info'].get('displayName', "")
         session.merge(table(uid, name))
     session.commit()
     return '訊息處理結束'
-
-
-

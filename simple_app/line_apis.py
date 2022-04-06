@@ -2,6 +2,16 @@ import requests as re
 import json
 from flask import current_app
 
+
+# TODO: reply with Line SDK
+# https://github.com/line/line-bot-sdk-python
+# from linebot import LineBotApi
+# def generateLineBotReplier():
+#     return LineBotApi(current_app.config['LINE_CHANNEL_ACCESS_TOKEN'])
+
+
+
+## Reply with RESTful api
 def getLineReqHeader():
     lineChannelAccessToken = current_app.config['LINE_CHANNEL_ACCESS_TOKEN']
     return {
