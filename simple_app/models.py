@@ -65,12 +65,12 @@ def handleLineMessage(jsonData):
                 message = msg_body["text"]  # 使用者端提問文字串內容
                 _, response = simpleIntentClassifier(userId, message)
                 sendReplyMessage(replyToken, response)
-                sendPushMessage(userId, response)  # debug
+                # sendPushMessage(userId, response)  # debug
             elif msg_body['type'] == 'location':
                 latlng = msg_body['latitude'], msg_body['longitude']
                 response = findPlaceHandler(userId, latlng)
                 sendReplyMessage(replyToken, response)
-                sendPushMessage(userId, response)  # debug, 不透過webhook
+                # sendPushMessage(userId, response)  # debug, 不透過webhook
 
         elif event['type'] == 'follow':
             userName = profile.get('displayName', '您')
