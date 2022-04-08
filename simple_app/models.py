@@ -36,7 +36,7 @@ def simpleIntentClassifier(userId, rawMsg):
     else:
         intent_word, intent_msg = parts[0], ""
     
-    print("Parts: ", parts, "Intent: ", intent_word, "Intent Msg: ", intent_msg)
+    print(f"Parts: *{parts}*, Intent: *{intent_word}*, Intent Msg: *{intent_msg}*")
 
     for intent_type, intent_info in intent_map.items():
         keywords, handler = intent_info['keywords'], intent_info['handler']

@@ -37,7 +37,7 @@ def findPlaceHandler(userId, latlng):
 
 def requestLocationHandler(userId, message):
     if message:
-        updateMemory(userId, {'search_input_message': message})
+        updateMemory(userId, search_input_message=message)
         print(f"Find *{message}*, request User Location")
         return [{
             "type": "text",
