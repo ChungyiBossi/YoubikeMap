@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+        // var socket = io.connect("http://127.0.0.1:5000/");
+        var socket = io.connect();
+        socket.on('status_response', function(msg) {
+            var date = new Date();
+
+            socket.emit('connect_event', {
+                data: 'connected!'
+            });
+            console.log("On Status Response");
+            $('#status').append('<p>status: ' + msg.data + "Time:" + date + '</p>');
+        });
+    });
+</script>
+
+<!-- 在body中加入status的div tag-->
+Online Status Check:
+<div id="status"></div>
+
+</html>

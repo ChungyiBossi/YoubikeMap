@@ -1,15 +1,15 @@
 
-from flask import Flask, render_template, request, Response, Blueprint
+from flask import (
+    render_template, 
+    abort, jsonify,
+    current_app,
+    request, 
+    Blueprint
+)
 from markupsafe import escape
 from .models import handleLineMessage
 
 simple_route = Blueprint("simple_route", __name__)
-
-
-@simple_route.route("/")
-def home_page():
-    return render_template("home.html")
-
 
 @simple_route.route("/smokeTest")
 def test_smoke():
@@ -27,3 +27,29 @@ def lineWebhook():
     jsonData = request.get_json()
     handleLineMessage(jsonData)
     return '訊息處理結束'
+
+# TODO: logging
+# update data through http request, handle it by websocket 
+@simple_route.route("/websocket", methods=['GET', 'POST'])
+def upload():
+    if not request.json:
+        print("Data is not json format")
+        abort(400)
+    print("Data: ", request.json)
+    d = request.json.get("data", 0)
+    webSocketEmit(d)
+    return jsonify(
+        {"response": "ok"}
+    )
+
+# webSocket test client 
+@simple_route.route("/webSocketTest")
+def webSocketTest():
+    return render_template('webSocketTest.html', async_mode=current_app.socketio.async_mode)
+
+# Move to model.py
+def webSocketEmit(data):
+    # 回傳給前端
+    current_app.socketio.emit('status_response', {'data': data})
+    print("Socket IO emit finished.")
+    
