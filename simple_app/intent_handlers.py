@@ -90,7 +90,6 @@ def requestLocationHandler(userId, message):
         }]
 
 
-
 def defaultHandler(userId, message):
     return [{
         "type": 'text',
@@ -106,4 +105,15 @@ def userHelpIntentHandler(userId, message):
     return [{
         "type": 'text',
         "text": f'葛格回覆說:{textResponse}'
+    }]
+
+
+def carActionHandler(userId, message):
+    if message in ["順時針轉", "順轉"]:
+        current_app.socketio.emit('status_response', {'rotationSide': 1}, namespace="/")
+    elif message in ["逆時針轉", "逆轉"]:
+        current_app.socketio.emit('status_response', {'rotationSide': -1}, namespace="/")
+    return [{
+        "type": 'text',
+        "text": f'車輛控制:{message}'
     }]
