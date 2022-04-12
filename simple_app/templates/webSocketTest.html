@@ -8,10 +8,6 @@
         var socket = io.connect();
         socket.on('status_response', function(msg) {
             var date = new Date();
-
-            socket.emit('connect_event', {
-                data: 'connected!'
-            });
             console.log("On Status Response");
             $('#status').append('<p>status: ' + msg.data + ", Time:" + date + '</p>');
         });

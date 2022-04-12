@@ -109,10 +109,10 @@ def userHelpIntentHandler(userId, message):
 
 
 def carActionHandler(userId, message):
-    if message in ["順時針轉", "順轉"]:
-        current_app.socketio.emit('status_response', {'rotationSide': 1}, namespace="/")
-    elif message in ["逆時針轉", "逆轉"]:
-        current_app.socketio.emit('status_response', {'rotationSide': -1}, namespace="/")
+    if message in ["順時針轉", "順轉", "順時針"]:
+        current_app.socketio.emit('car_rotate', {'rotationSide': 1}, namespace="/")
+    elif message in ["逆時針轉", "逆轉", "逆時針"]:
+        current_app.socketio.emit('car_rotate', {'rotationSide': -1}, namespace="/")
     return [{
         "type": 'text',
         "text": f'車輛控制:{message}'

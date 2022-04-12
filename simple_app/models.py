@@ -24,7 +24,7 @@ intent_map = {
     },
     "車輛控制": {
         'keywords': ["車輛控制", "控車", "Arduino"],
-        'handler': defaultHandler
+        'handler': carActionHandler
     }
 }
 
