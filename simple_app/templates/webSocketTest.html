@@ -6,9 +6,9 @@
     $(document).ready(function() {
         // var socket = io.connect("http://127.0.0.1:5000/");
         var socket = io.connect();
-        socket.on('status_response', function(msg) {
+        socket.on('car_rotate', function(msg) {
             var date = new Date();
-            console.log("On Status Response");
+            console.log("On Car Rotate");
             $('#status').append('<p>status: ' + msg.data + ", Time:" + date + '</p>');
         });
     });
