@@ -1,1 +1,1 @@
-web: gunicorn myWsgi:app
+web: gunicorn --worker-class eventlet -w 1 myWsgi:app --reload
