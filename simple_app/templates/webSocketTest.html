@@ -9,7 +9,7 @@
         socket.on('car_rotate', function(msg) {
             var date = new Date();
             console.log("On Car Rotate");
-            $('#status').append('<p>Status: ' + msg.data + ", Time:" + date + '</p>');
+            $('#status').append('<p>Status: ' + msg.rotationSide + ", Time:" + date + '</p>');
         });
         socket.on('msg_receive', function(msg) {
             var date = new Date();

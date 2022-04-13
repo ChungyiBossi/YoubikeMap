@@ -50,6 +50,7 @@ def simpleIntentClassifier(userId, rawMsg):
                 current_app.socketio.emit('msg_receive', {'intent': intent_type, 'text': intent_msg}, namespace="/")
                 #######
                 return intent_type, handler(userId, intent_msg)
+    current_app.socketio.emit('msg_receive', {'intent': "default", 'text': rawMsg}, namespace="/")            
     return "default", defaultHandler(userId, rawMsg)
 
 
