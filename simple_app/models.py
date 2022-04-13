@@ -46,6 +46,9 @@ def simpleIntentClassifier(userId, rawMsg):
         keywords, handler = intent_info['keywords'], intent_info['handler']
         for k in keywords:
             if k in intent_word:  # 用起頭字判定意圖
+                # emit websocket front-end
+                current_app.socketio.emit('msg_receive', {'intent': intent_type, 'text': intent_msg}, namespace="/")
+                #######
                 return intent_type, handler(userId, intent_msg)
     return "default", defaultHandler(userId, rawMsg)
 

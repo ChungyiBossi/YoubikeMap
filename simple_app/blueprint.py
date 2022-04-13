@@ -50,6 +50,6 @@ def webSocketTest():
 # Move to model.py
 def webSocketEmit(data):
     # 回傳給前端
-    current_app.socketio.emit('car_rotation', {'data': data})
+    current_app.socketio.emit('car_rotate', {'data': data})
     print("Socket IO emit finished.")
     

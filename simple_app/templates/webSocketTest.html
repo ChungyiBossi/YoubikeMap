@@ -9,7 +9,11 @@
         socket.on('car_rotate', function(msg) {
             var date = new Date();
             console.log("On Car Rotate");
-            $('#status').append('<p>status: ' + msg.data + ", Time:" + date + '</p>');
+            $('#status').append('<p>Status: ' + msg.data + ", Time:" + date + '</p>');
+        });
+        socket.on('msg_receive', function(msg) {
+            var date = new Date();
+            $('#websocketMessage').append('<p>Intent: ' + msg.intent + ',  message: ' + msg.text + ", Time:" + date + '</p>');
         });
     });
 </script>
@@ -17,5 +21,7 @@
 <!-- 在body中加入status的div tag-->
 Online Status Check:
 <div id="status"></div>
+<br/> Message receive
+<div id="websocketMessage"></div>
 
 </html>
