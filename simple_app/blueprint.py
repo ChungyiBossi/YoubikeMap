@@ -6,6 +6,9 @@ from flask import (
     request, 
     Blueprint
 )
+from flask_socketio import (
+    send, emit
+)
 from markupsafe import escape
 from .models import handleLineMessage
 
@@ -45,11 +48,11 @@ def upload():
 # webSocket test client 
 @simple_route.route("/webSocketTest")
 def webSocketTest():
-    return render_template('webSocketTest.html', async_mode=current_app.socketio.async_mode)
+    return render_template('webSocketTest.html', async_mode='eventlet')
 
 # Move to model.py
 def webSocketEmit(data):
     # 回傳給前端
-    current_app.socketio.emit('car_rotate', {'data': data})
+    emit('car_rotate', {'data': data})
     print("Socket IO emit finished.")
     

@@ -24,11 +24,13 @@ def create_flask_app(test_config=None):
     app.google_client = GooogleMapClient(api_key=app.config.get('GOOGLE_API_KEY'))
 
     # socket io
+    # (?) 是不是創建socketio instance的時候，偷做了什麼事，因為只要創建後，就能透過gunicorn開啟
     socketio = SocketIO(app, logger=True)
-    app.socketio = socketio
-
-    @app.socketio.on('connect_event')
+    @socketio.on('connect_event')
     def connected_msg(msg):
         print("Connected! ", msg)
 
+    @socketio.on("ping_from_client")
+    def ping_from_client():
+        print("Ping from client")
     return app

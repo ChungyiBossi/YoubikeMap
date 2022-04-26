@@ -1,1 +1,1 @@
-web: gunicorn --worker-class eventlet -w 1 myWsgi:app --reload
+gunicorn --worker-class eventlet -w 1 -b :5566 myWsgi:app --reload
