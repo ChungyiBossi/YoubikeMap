@@ -53,6 +53,6 @@ def webSocketTest():
 # Move to model.py
 def webSocketEmit(data):
     # 回傳給前端
-    emit('car_rotate', {'data': data})
+    current_app.extensions['socketio'].emit('car_rotate', {'data': data}, namespace="/")
     print("Socket IO emit finished.")
     
