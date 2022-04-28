@@ -7,6 +7,9 @@ from .intent_handlers import *
 from .postgreSQL.session import create_sql_scoped_session
 from .postgreSQL.tables import LineUser
 from flask import current_app
+from flask_socketio import (
+    send, emit
+)
 
 intent_map = {
     # intent type: keywords
@@ -47,10 +50,10 @@ def simpleIntentClassifier(userId, rawMsg):
         for k in keywords:
             if k in intent_word:  # 用起頭字判定意圖
                 # emit websocket front-end
-                current_app.socketio.emit('msg_receive', {'intent': intent_type, 'text': intent_msg}, namespace="/")
+                emit('msg_receive', {'intent': intent_type, 'text': intent_msg}, namespace="/")
                 #######
                 return intent_type, handler(userId, intent_msg)
-    current_app.socketio.emit('msg_receive', {'intent': "default", 'text': rawMsg}, namespace="/")            
+    emit('msg_receive', {'intent': "default", 'text': rawMsg}, namespace="/")            
     return "default", defaultHandler(userId, rawMsg)
 
 
