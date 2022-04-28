@@ -25,7 +25,7 @@ def create_flask_app(test_config=None):
 
     # socket io
     # (?) 是不是創建socketio instance的時候，偷做了什麼事，因為只要創建後，就能透過gunicorn開啟
-    socketio = SocketIO(app, logger=True)
+    socketio = SocketIO(app, logger=True, engineio_logger=True, cors_allowed_origins="*")
     @socketio.on('connect_event')
     def connected_msg(msg):
         print("Connected! ", msg)
