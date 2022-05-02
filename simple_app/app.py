@@ -5,6 +5,7 @@ from .blueprint import simple_route
 from .postgreSQL.session import create_engine
 from .postgreSQL.tables import LineUser
 from .google_map_api import GooogleMapClient
+from .sockerio_route import create_sockio_client
 
 def create_flask_app(test_config=None):
     # create and configure the app
@@ -25,12 +26,5 @@ def create_flask_app(test_config=None):
 
     # socket io
     # (?) 是不是創建socketio instance的時候，偷做了什麼事，因為只要創建後，就能透過gunicorn開啟
-    socketio = SocketIO(app, logger=True, engineio_logger=True, cors_allowed_origins="*")
-    @socketio.on('connect_event')
-    def connected_msg(msg):
-        print("Connected! ", msg)
-
-    @socketio.on("ping_from_client")
-    def ping_from_client():
-        print("Ping from client")
+    socketio = create_sockio_client(app)
     return app

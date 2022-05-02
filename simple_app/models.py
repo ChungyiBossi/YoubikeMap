@@ -7,7 +7,6 @@ from .intent_handlers import *
 from .postgreSQL.session import create_sql_scoped_session
 from .postgreSQL.tables import LineUser
 from flask import current_app
-# current_app.extensions['socketio']
 
 intent_map = {
     # intent type: keywords
@@ -93,3 +92,11 @@ def handleLineMessage(jsonData):
         session.merge(table(uid, name))
     session.commit()
     return '訊息處理結束'
+
+
+# Move to model.py
+def webSocketEmit(data):
+    # 回傳給前端
+    current_app.extensions['socketio'].emit('http_event', {'data': data}, namespace="/")
+    print("Socket IO emit finished.")
+    

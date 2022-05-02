@@ -10,7 +10,10 @@ from flask_socketio import (
     send, emit
 )
 from markupsafe import escape
-from .models import handleLineMessage
+from .models import (
+    handleLineMessage,
+    webSocketEmit
+)
 
 simple_route = Blueprint("simple_route", __name__)
 
@@ -49,10 +52,3 @@ def upload():
 @simple_route.route("/webSocketTest")
 def webSocketTest():
     return render_template('webSocketTest.html', async_mode='eventlet')
-
-# Move to model.py
-def webSocketEmit(data):
-    # 回傳給前端
-    current_app.extensions['socketio'].emit('car_rotate', {'data': data}, namespace="/")
-    print("Socket IO emit finished.")
-    
