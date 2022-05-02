@@ -1,11 +1,11 @@
 import os
 from flask import Flask
 from flask_socketio import SocketIO
-from .blueprint import simple_route
-from .postgreSQL.session import create_engine
-from .postgreSQL.tables import LineUser
-from .google_map_api import GooogleMapClient
-from .sockerio_route import create_sockio_client
+from simple_app.blueprint import simple_route
+from simple_app.postgreSQL.session import create_engine
+from simple_app.postgreSQL.tables import LineUser
+from simple_app.google_map_api import GooogleMapClient
+from simple_app.sockerio_route import create_sockio_client
 
 def create_flask_app(test_config=None):
     # create and configure the app

@@ -10,7 +10,7 @@ from flask_socketio import (
     send, emit
 )
 from markupsafe import escape
-from .models import (
+from simple_app.models import (
     handleLineMessage,
     webSocketEmit
 )

@@ -1,11 +1,12 @@
-from .line_apis import (
+from curses import use_default_colors
+from simple_app.line_apis import (
     getUserProfile,
     sendReplyMessage,
     sendPushMessage
 )
-from .intent_handlers import *
-from .postgreSQL.session import create_sql_scoped_session
-from .postgreSQL.tables import LineUser
+from simple_app.intent_handlers import *
+from simple_app.postgreSQL.session import create_sql_scoped_session
+from simple_app.postgreSQL.tables import LineUser
 from flask import current_app
 
 intent_map = {
@@ -46,12 +47,27 @@ def simpleIntentClassifier(userId, rawMsg):
         keywords, handler = intent_info['keywords'], intent_info['handler']
         for k in keywords:
             if k in intent_word:  # 用起頭字判定意圖
-                # emit websocket front-end
-                current_app.extensions['socketio'].emit('msg_receive', {'intent': intent_type, 'text': intent_msg}, namespace="/")
-                #######
-                return intent_type, handler(userId, intent_msg)
-    current_app.extensions['socketio'].emit('msg_receive', {'intent': "default", 'text': rawMsg}, namespace="/")            
-    return "default", defaultHandler(userId, rawMsg)
+                return {
+                    'userId': userId,
+                    'intentHandler': handler,
+                    'intentType': intent_type,
+                    'intentMessage': intent_msg
+                }
+    return {
+        'userId': userId,
+        'intentHandler': defaultHandler,
+        'intentType': "default",
+        'intentMessage': rawMsg
+    } 
+
+
+def getIntentResponse(**kwargs):
+    userId = kwargs['userId']
+    handler = kwargs['intentHandler']
+    type = kwargs['intentType']
+    msg = kwargs['intentMessage']
+    current_app.extensions['socketio'].emit('msg_receive', {'intent': type, 'text': msg}, namespace="/")    
+    return handler(userId, msg)
 
 
 def handleLineMessage(jsonData):
@@ -71,7 +87,7 @@ def handleLineMessage(jsonData):
 
             if msg_body['type'] == 'text':
                 message = msg_body["text"]  # 使用者端提問文字串內容
-                _, response = simpleIntentClassifier(userId, message)
+                response = getIntentResponse(simpleIntentClassifier(userId, message))
                 sendReplyMessage(replyToken, response)
                 # sendPushMessage(userId, response)  # debug
             elif msg_body['type'] == 'location':
@@ -94,7 +110,6 @@ def handleLineMessage(jsonData):
     return '訊息處理結束'
 
 
-# Move to model.py
 def webSocketEmit(data):
     # 回傳給前端
     current_app.extensions['socketio'].emit('http_event', {'data': data}, namespace="/")
