@@ -87,7 +87,7 @@ def handleLineMessage(jsonData):
 
             if msg_body['type'] == 'text':
                 message = msg_body["text"]  # 使用者端提問文字串內容
-                response = getIntentResponse(simpleIntentClassifier(userId, message))
+                response = getIntentResponse(**simpleIntentClassifier(userId, message))
                 sendReplyMessage(replyToken, response)
                 # sendPushMessage(userId, response)  # debug
             elif msg_body['type'] == 'location':
