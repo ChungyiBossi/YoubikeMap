@@ -15,7 +15,7 @@ intent_map = {
         'handler': userHelpIntentHandler
     },
     "找地點": {
-        'keywords': ["幫我找", "幫找", "找", "!find"],
+        'keywords': ["幫我找", "幫忙找", "!找", "!find"],
         'handler': requestLocationHandler
     },
     "default": {
@@ -23,10 +23,10 @@ intent_map = {
         'handler': defaultHandler
     },
     "車輛控制": {
-        'keywords': ["車輛控制", "控車", "Arduino"],
+        'keywords': ["!車輛控制", "!Arduino"],
         'handler': carActionHandler
     },
-    "open_ai": {
+    "聊天": {
         'keywords': ["跟我聊聊", "你知道什麼是", "你知道"],
         'handler': openaiHandler
     }

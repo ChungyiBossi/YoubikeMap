@@ -14,7 +14,9 @@ def create_confused_input():
     return [
         ("!幫助找地點", "主頁選單"),
         ("幫我找Arduino", "找地點"),
-        ("Arduino幫我找", "找地點")
+        ("Arduino幫我找", "找地點"),
+        ("跟我聊聊Arduino", "聊天"),
+        ("你知道Arduino嗎？", "聊天")
     ]
 
 

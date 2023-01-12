@@ -1,7 +1,7 @@
 from flask import current_app
 from collections import defaultdict
-from line_msg_generator import *
-from openai_api import question_and_answer, chat
+from .line_msg_generator import *
+from .openai_api import question_and_answer, chat
 
 memory = defaultdict(lambda: dict())  # local memory
 
