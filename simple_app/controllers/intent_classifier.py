@@ -1,10 +1,9 @@
-from curses import use_default_colors
-from simple_app.line_apis import (
+from ..models.line_apis import (
     getUserProfile,
     sendReplyMessage,
     sendPushMessage
 )
-from simple_app.intent_handlers import *
+from simple_app.models.intent_handlers import *
 from simple_app.postgreSQL.session import create_sql_scoped_session
 from simple_app.postgreSQL.tables import LineUser
 from flask import current_app
@@ -40,8 +39,9 @@ def simpleIntentClassifier(userId, rawMsg):
         # TODO: TRUELY Intent classifier
     else:
         intent_word, intent_msg = parts[0], ""
-    
-    print(f"Parts: *{parts}*, Intent: *{intent_word}*, Intent Msg: *{intent_msg}*")
+
+    print(
+        f"Parts: *{parts}*, Intent: *{intent_word}*, Intent Msg: *{intent_msg}*")
 
     for intent_type, intent_info in intent_map.items():
         keywords, handler = intent_info['keywords'], intent_info['handler']
@@ -58,7 +58,7 @@ def simpleIntentClassifier(userId, rawMsg):
         'intentHandler': defaultHandler,
         'intentType': "default",
         'intentMessage': rawMsg
-    } 
+    }
 
 
 def getIntentResponse(**kwargs):
@@ -66,12 +66,12 @@ def getIntentResponse(**kwargs):
     handler = kwargs['intentHandler']
     type = kwargs['intentType']
     msg = kwargs['intentMessage']
-    current_app.extensions['socketio'].emit('msg_receive', {'intent': type, 'text': msg}, namespace="/")    
+    current_app.extensions['socketio'].emit(
+        'msg_receive', {'intent': type, 'text': msg}, namespace="/")
     return handler(userId, msg)
 
 
 def handleLineMessage(jsonData):
-    session = create_sql_scoped_session(current_app.db_engine)
     update_line_user_data = dict()
 
     for event in jsonData['events']:
@@ -87,7 +87,8 @@ def handleLineMessage(jsonData):
 
             if msg_body['type'] == 'text':
                 message = msg_body["text"]  # 使用者端提問文字串內容
-                response = getIntentResponse(**simpleIntentClassifier(userId, message))
+                response = getIntentResponse(
+                    **simpleIntentClassifier(userId, message))
                 sendReplyMessage(replyToken, response)
                 # sendPushMessage(userId, response)  # debug
             elif msg_body['type'] == 'location':
@@ -102,16 +103,11 @@ def handleLineMessage(jsonData):
             sendReplyMessage(replyToken, defaultHandler(userId, greeting))
 
     # merge db data
-    for uid, d in update_line_user_data.items():
-        table = update_line_user_data[uid]['type']
-        name = update_line_user_data[uid]['info'].get('displayName', "")
-        session.merge(table(uid, name))
-    session.commit()
+    if current_app.config.get("ENABLE_POSTGRESQL"):
+        session = create_sql_scoped_session(current_app.db_engine)
+        for uid, d in update_line_user_data.items():
+            table = update_line_user_data[uid]['type']
+            name = update_line_user_data[uid]['info'].get('displayName', "")
+            session.merge(table(uid, name))
+        session.commit()
     return '訊息處理結束'
-
-
-def webSocketEmit(data):
-    # 回傳給前端
-    current_app.extensions['socketio'].emit('http_event', {'data': data}, namespace="/")
-    print("Socket IO emit finished.")
-    

@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.suggest.preview": true,
+		"python.defaultInterpreterPath": "/Users/chungilin/LinebotWebhookServer/WebhookServerEnv/bin/python3"
+	}
+}
