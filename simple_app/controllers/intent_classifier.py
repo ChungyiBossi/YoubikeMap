@@ -25,6 +25,10 @@ intent_map = {
     "車輛控制": {
         'keywords': ["車輛控制", "控車", "Arduino"],
         'handler': carActionHandler
+    },
+    "open_ai": {
+        'keywords': ["跟我聊聊", "你知道什麼是", "你知道"],
+        'handler': openaiHandler
     }
 }
 
@@ -92,6 +96,7 @@ def handleLineMessage(jsonData):
                 sendReplyMessage(replyToken, response)
                 # sendPushMessage(userId, response)  # debug
             elif msg_body['type'] == 'location':
+                # 假設收到地點，代表要找其鄰近的餐廳/咖啡廳/電影院
                 latlng = msg_body['latitude'], msg_body['longitude']
                 response = findPlaceHandler(userId, latlng)
                 sendReplyMessage(replyToken, response)

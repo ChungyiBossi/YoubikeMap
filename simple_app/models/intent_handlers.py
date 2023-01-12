@@ -1,6 +1,10 @@
 from flask import current_app
 from collections import defaultdict
-memory = defaultdict(lambda: dict())
+from line_msg_generator import *
+from openai_api import question_and_answer, chat
+
+memory = defaultdict(lambda: dict())  # local memory
+
 
 def updateMemory(userId, **kwargs):
     for k, v in kwargs.items():
@@ -44,13 +48,7 @@ def requestLocationHandler(userId, message):
             "text": f"請選擇您欲查詢 {message} 的位置",
             "quickReply": {
                 "items": [
-                    {
-                        "type": "action",
-                        "action": {
-                            "type": "location",
-                            "label": "選擇欲查詢的地點"
-                        }
-                    }
+                    location_action('選擇欲查詢的地點')
                 ]
             }
         }]
@@ -60,31 +58,9 @@ def requestLocationHandler(userId, message):
             "text": f"要查什麼呢?",
             "quickReply": {
                 "items": [
-                    {
-                        "type": "action",
-                        "action": {
-                            "type": "message",
-                            "label": "餐廳",
-                            "text": "找 餐廳"
-                        }
-                    },
-                    {
-                        "type": "action",
-                        "action": {
-                            "type": "message",
-                            "label": "咖啡廳",
-                            "text": "找 咖啡廳"
-                        }
-                    },
-                    {
-                        "type": "action",
-                        "action": {
-                            "type": "message",
-                            "label": "電影院",
-                            "text": "找 電影院"
-                        }
-                    }
-                    
+                    message_action("餐廳", "找 餐廳"),
+                    message_action("咖啡廳", "找 咖啡廳"),
+                    message_action("電影院", "找 電影院")
                 ]
             }
         }]
@@ -110,10 +86,19 @@ def userHelpIntentHandler(userId, message):
 
 def carActionHandler(userId, message):
     if message in ["順時針轉", "順轉", "順時針"]:
-        current_app.extensions['socketio'].emit('car_rotate', {'rotationSide': 1}, namespace="/")
+        current_app.extensions['socketio'].emit(
+            'car_rotate', {'rotationSide': 1}, namespace="/")
     elif message in ["逆時針轉", "逆轉", "逆時針"]:
-        current_app.extensions['socketio'].emit('car_rotate', {'rotationSide': -1}, namespace="/")
+        current_app.extensions['socketio'].emit(
+            'car_rotate', {'rotationSide': -1}, namespace="/")
     return [{
         "type": 'text',
         "text": f'車輛控制:{message}'
+    }]
+
+
+def openaiHandler(userId, message):
+    return [{
+        "type": 'text',
+        "text": chat(message)
     }]

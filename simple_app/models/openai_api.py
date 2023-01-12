@@ -15,3 +15,18 @@ def question_and_answer(prompt):
     )
 
     return response['choices'][0]['text']
+
+
+def chat(prompt):
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=prompt+"\nAI:",
+        temperature=0.9,
+        max_tokens=150,
+        top_p=1,
+        frequency_penalty=0.0,
+        presence_penalty=0.6,
+        stop=[" Human:", " AI:"]
+    )
+
+    return response['choices'][0]['text']
