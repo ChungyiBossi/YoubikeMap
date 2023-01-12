@@ -1,6 +1,6 @@
-from cgi import test
 import pytest
-from simple_app.models import simpleIntentClassifier, intent_map
+from simple_app.controllers import simpleIntentClassifier, intent_map
+
 
 def create_test_data():
     data = list()
@@ -9,12 +9,14 @@ def create_test_data():
             data.append((f"{kw} USER_INPUT", intent))
     return data
 
+
 def create_confused_input():
     return [
         ("!幫助找地點", "主頁選單"),
         ("幫我找Arduino", "找地點"),
         ("Arduino幫我找", "找地點")
     ]
+
 
 class TestSimpleIntentClassifier():
     @pytest.mark.parametrize('msg,expected_intent', create_test_data())
