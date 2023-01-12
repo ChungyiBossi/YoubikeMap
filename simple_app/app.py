@@ -1,13 +1,13 @@
 import os
 from flask import Flask
 from flask_socketio import SocketIO
-from simple_app.views import (
+from simple_app.controllers import (
     simple_route,
     openai_chatbot
 )
 from simple_app.postgreSQL.session import create_engine
 from simple_app.postgreSQL.tables import LineUser
-from simple_app.google_map_api import GooogleMapClient
+from simple_app.models.google_map_api import GooogleMapClient
 from simple_app.sockerio_route import create_sockio_client
 
 import openai
