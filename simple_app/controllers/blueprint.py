@@ -12,7 +12,7 @@ simple_route = Blueprint("simple_route", __name__)
 
 
 @simple_route.route("/")
-def test_smoke():
+def home_page():
     return "Chung Yi's website is hosting...."
 
 
