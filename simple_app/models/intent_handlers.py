@@ -102,5 +102,5 @@ def openaiHandler(userId, message):
 
     return [{
         "type": 'text',
-        "text": chat(message)
+        "text": chat(message).strip()
     }]
