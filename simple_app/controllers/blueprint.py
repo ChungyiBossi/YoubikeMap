@@ -11,6 +11,11 @@ from .intent_classifier import handleLineMessage
 simple_route = Blueprint("simple_route", __name__)
 
 
+@simple_route.route("/")
+def test_smoke():
+    return "Chung Yi's website is hosting...."
+
+
 @simple_route.route("/smokeTest")
 def test_smoke():
     return "No smoke here"
