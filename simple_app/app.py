@@ -31,11 +31,14 @@ def create_flask_app(test_config=None):
     # register blueprint
     app.register_blueprint(simple_route)
     app.register_blueprint(openai_chatbot)
+
     # create db
     if app.config.get("ENABLE_POSTGRESQL"):
         app.db_engine = create_engine(url=app.config.get('POSTGRESQL_DB_URL'))
-        app.google_client = GooogleMapClient(
-            api_key=app.config.get('GOOGLE_API_KEY'))
+
+    # Google Map API
+    app.google_client = GooogleMapClient(
+        api_key=app.config.get('GOOGLE_API_KEY'))
 
     # socket io
     # (?) 是不是創建socketio instance的時候，偷做了什麼事，因為只要創建後，就能透過gunicorn開啟

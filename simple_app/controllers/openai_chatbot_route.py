@@ -3,7 +3,7 @@ from flask import (
     request,
     Blueprint
 )
-from simple_app.models import question_and_answer
+from simple_app.models import question_and_answer, chat
 
 openai_chatbot = Blueprint("openai_chatbot", __name__)
 
@@ -15,6 +15,6 @@ def answer_questions(msg=""):
 
 
 @openai_chatbot.route("/openai/chat/<msg>")
-def chat(msg=""):
-    response = question_and_answer(msg)
+def chatbot(msg=""):
+    response = chat(msg)
     return response

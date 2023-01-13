@@ -98,6 +98,8 @@ def carActionHandler(userId, message):
 
 
 def openaiHandler(userId, message):
+    # TODO: cut the sentences for better presentation
+
     return [{
         "type": 'text',
         "text": chat(message)

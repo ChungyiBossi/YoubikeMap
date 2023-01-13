@@ -22,7 +22,7 @@ def chat(prompt):
         model="text-davinci-003",
         prompt=prompt+"\nAI:",
         temperature=0.9,
-        max_tokens=150,
+        max_tokens=300,
         top_p=1,
         frequency_penalty=0.0,
         presence_penalty=0.6,

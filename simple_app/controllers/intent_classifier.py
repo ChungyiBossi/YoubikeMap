@@ -12,22 +12,27 @@ intent_map = {
     # intent type: keywords
     "主頁選單": {
         'keywords': ['!help', '!幫助', '!主頁'],
+        'whole_sentence': False,
         'handler': userHelpIntentHandler
     },
     "找地點": {
         'keywords': ["幫我找", "幫忙找", "!找", "!find"],
+        'whole_sentence': False,
         'handler': requestLocationHandler
     },
     "default": {
         'keywords': [],
+        'whole_sentence': False,
         'handler': defaultHandler
     },
     "車輛控制": {
         'keywords': ["!車輛控制", "!Arduino"],
+        'whole_sentence': False,
         'handler': carActionHandler
     },
     "聊天": {
         'keywords': ["跟我聊聊", "你知道什麼是", "你知道"],
+        'whole_sentence': True,
         'handler': openaiHandler
     }
 }
@@ -45,7 +50,7 @@ def simpleIntentClassifier(userId, rawMsg):
         intent_word, intent_msg = parts[0], ""
 
     print(
-        f"Parts: *{parts}*, Intent: *{intent_word}*, Intent Msg: *{intent_msg}*")
+        f"Parts: *{parts}*, Intent word: *{intent_word}*, Intent Msg: *{intent_msg}*")
 
     for intent_type, intent_info in intent_map.items():
         keywords, handler = intent_info['keywords'], intent_info['handler']
@@ -55,7 +60,8 @@ def simpleIntentClassifier(userId, rawMsg):
                     'userId': userId,
                     'intentHandler': handler,
                     'intentType': intent_type,
-                    'intentMessage': intent_msg
+                    'intentMessage': intent_word + intent_msg
+                    if intent_info['whole_sentence'] else intent_msg
                 }
     return {
         'userId': userId,

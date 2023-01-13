@@ -1,0 +1,12 @@
+# gcloud config
+runtime: python39 #https://stackoverflow.com/questions/69473317/eventlet-throws-error-on-import-in-docker
+
+instance_class: F1 # 預設為F1
+
+env_variables:
+  ENV_NAME: "ENV_VALUE"
+  ENV_NAME_2: "ENV_VALUE_2"
+  ENV_NAME_3: "ENV_VALUE_3"
+
+
+entrypoint: gunicorn -b :$PORT myWsgi:app # Tell app engine how to run app, $PORT is settle by GOOGLE
