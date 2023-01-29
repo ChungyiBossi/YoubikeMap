@@ -17,3 +17,12 @@ def message_action(label, text):
             "text": text
         }
     }
+
+
+def image_message(img_url):
+    # https://developers.line.biz/en/reference/messaging-api/#image-message
+    return {
+        "type": "image",
+        "originalContentUrl": img_url,
+        "previewImageUrl": img_url
+    }

@@ -30,3 +30,16 @@ def chat(prompt):
     )
 
     return response['choices'][0]['text']
+
+
+def text_to_image(prompt):
+    response = openai.Image.create(
+        prompt=prompt,
+        n=1,
+        size="1024x1024"
+    )
+    image_url = response['data'][0]['url']
+
+    print("Image URL:", image_url)
+
+    return image_url

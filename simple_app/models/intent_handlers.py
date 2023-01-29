@@ -1,7 +1,7 @@
 from flask import current_app
 from collections import defaultdict
 from .line_msg_generator import *
-from .openai_api import question_and_answer, chat
+from .openai_api import chat, text_to_image
 
 memory = defaultdict(lambda: dict())  # local memory
 
@@ -85,7 +85,7 @@ def userHelpIntentHandler(userId, message):
 
 
 def carActionHandler(userId, message):
-    if message in ["順時針轉", "順轉", "順時針"]:
+    if message in ["順時針轉", "順轉", "順時針"]:  # some kind of entity infomation
         current_app.extensions['socketio'].emit(
             'car_rotate', {'rotationSide': 1}, namespace="/")
     elif message in ["逆時針轉", "逆轉", "逆時針"]:
@@ -104,3 +104,7 @@ def openaiHandler(userId, message):
         "type": 'text',
         "text": chat(message).strip()
     }]
+
+
+def openaiImageCreateHandler(usrId, message):
+    return [image_message(text_to_image(message).strip())]

@@ -7,6 +7,7 @@ from simple_app.models.intent_handlers import *
 from simple_app.postgreSQL.session import create_sql_scoped_session
 from simple_app.postgreSQL.tables import LineUser
 from flask import current_app
+import re
 
 intent_map = {
     # intent type: keywords
@@ -31,9 +32,14 @@ intent_map = {
         'handler': carActionHandler
     },
     "聊天": {
-        'keywords': ["跟我聊聊", "你知道什麼是", "你知道"],
+        'keywords': ["跟我聊聊", "你知道什麼是", "你知道", "聊聊"],
         'whole_sentence': True,
         'handler': openaiHandler
+    },
+    "生成圖片": {
+        'keywords': ["生成圖片", "一張圖包含"],
+        'whole_sentence': False,
+        'handler': openaiImageCreateHandler
     }
 }
 
@@ -55,7 +61,7 @@ def simpleIntentClassifier(userId, rawMsg):
     for intent_type, intent_info in intent_map.items():
         keywords, handler = intent_info['keywords'], intent_info['handler']
         for k in keywords:
-            if k in intent_word:  # 用起頭字判定意圖
+            if k in intent_word:  # 用關鍵字判定意圖，只要有包含在內即可
                 return {
                     'userId': userId,
                     'intentHandler': handler,
@@ -122,3 +128,17 @@ def handleLineMessage(jsonData):
             session.merge(table(uid, name))
         session.commit()
     return '訊息處理結束'
+
+
+def keywords_to_regex(keywords):
+    kws = "|".join(keywords)
+    return re.compile(f"({kws})+[ ]*([^ ]+)")
+
+
+def match_intent_keywords_and_msg(user_msg, regex_pattern):
+    # 全半形控制
+    groups = re.search(regex_pattern, user_msg).groups()
+    print(user_msg)
+    print(regex_pattern)
+    print(groups)
+    return groups[0], "".join(groups[1:])
