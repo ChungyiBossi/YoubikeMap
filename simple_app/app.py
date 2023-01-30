@@ -40,6 +40,8 @@ def create_flask_app(test_config=None):
     app.google_client = GooogleMapClient(
         api_key=app.config.get('GOOGLE_API_KEY'))
 
+    # Teachable Machine Model
+
     # socket io
     # (?) 是不是創建socketio instance的時候，偷做了什麼事，因為只要創建後，就能透過gunicorn開啟
     socketio = create_sockio_client(app)

@@ -35,8 +35,7 @@ def create_regex_matcher_input():
     return [
         # user_msg,
         # regex_pattern,
-        # intent_keyword,
-        # message
+        # intent_keyword, message
         (
             "!車輛控制 靠左",
             keywords_to_regex(["!車輛控制", "!Arduino"]),

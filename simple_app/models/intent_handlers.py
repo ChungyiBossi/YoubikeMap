@@ -107,4 +107,4 @@ def openaiHandler(userId, message):
 
 
 def openaiImageCreateHandler(usrId, message):
-    return [image_message(text_to_image(message).strip())]
+    return [image_message(img_url=text_to_image(message).strip())]

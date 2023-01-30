@@ -106,6 +106,9 @@ def handleLineMessage(jsonData):
                 response = findPlaceHandler(userId, latlng)
                 sendReplyMessage(replyToken, response)
                 # sendPushMessage(userId, response)  # debug, 不透過webhook
+            elif msg_body['type'] == 'image':
+                # TODO:收到圖片的處理
+                pass
 
         elif event['type'] == 'follow':
             userName = profile.get('displayName', '您')
