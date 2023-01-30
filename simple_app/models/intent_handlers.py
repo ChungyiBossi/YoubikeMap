@@ -58,9 +58,9 @@ def requestLocationHandler(userId, message):
             "text": f"要查什麼呢?",
             "quickReply": {
                 "items": [
-                    message_action("餐廳", "找 餐廳"),
-                    message_action("咖啡廳", "找 咖啡廳"),
-                    message_action("電影院", "找 電影院")
+                    message_action("餐廳", "幫我找 餐廳"),
+                    message_action("咖啡廳", "幫我找 咖啡廳"),
+                    message_action("電影院", "幫我找 電影院")
                 ]
             }
         }]
@@ -69,7 +69,7 @@ def requestLocationHandler(userId, message):
 def defaultHandler(userId, message):
     return [{
         "type": 'text',
-        "text": f'葛格回覆說:{message}'
+        "text": f'請您再更詳細描述問題唷！'
     }]
 
 

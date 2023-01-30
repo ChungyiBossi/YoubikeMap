@@ -45,29 +45,21 @@ intent_map = {
 
 
 def simpleIntentClassifier(userId, rawMsg):
-    ## TODO: NER
-    parts = rawMsg.split()
-
-    if len(parts) >= 2:
-        # 合併後面的訊息
-        intent_word, intent_msg = parts[0], "".join(parts[1:])
-        # TODO: TRUELY Intent classifier
-    else:
-        intent_word, intent_msg = parts[0], ""
-
-    print(
-        f"Parts: *{parts}*, Intent word: *{intent_word}*, Intent Msg: *{intent_msg}*")
 
     for intent_type, intent_info in intent_map.items():
-        keywords, handler = intent_info['keywords'], intent_info['handler']
-        for k in keywords:
-            if k in intent_word:  # 用關鍵字判定意圖，只要有包含在內即可
+        keywords = intent_info['keywords']
+        if keywords:
+            regex_pattern = keywords_to_regex(keywords)
+            handler = intent_info['handler']
+            matched_kw, message = \
+                match_intent_keywords_and_msg(rawMsg, regex_pattern)
+            if matched_kw:
                 return {
                     'userId': userId,
                     'intentHandler': handler,
                     'intentType': intent_type,
-                    'intentMessage': intent_word + intent_msg
-                    if intent_info['whole_sentence'] else intent_msg
+                    'intentMessage': matched_kw + message
+                    if intent_info['whole_sentence'] else message
                 }
     return {
         'userId': userId,
@@ -108,6 +100,7 @@ def handleLineMessage(jsonData):
                 sendReplyMessage(replyToken, response)
                 # sendPushMessage(userId, response)  # debug
             elif msg_body['type'] == 'location':
+                # TODO: 需要一個類似flow概念的接續方法。
                 # 假設收到地點，代表要找其鄰近的餐廳/咖啡廳/電影院
                 latlng = msg_body['latitude'], msg_body['longitude']
                 response = findPlaceHandler(userId, latlng)
@@ -132,13 +125,14 @@ def handleLineMessage(jsonData):
 
 def keywords_to_regex(keywords):
     kws = "|".join(keywords)
-    return re.compile(f"({kws})+[ ]*([^ ]+)")
+    return re.compile(f"({kws})+[ ]*([^ ]*)")
 
 
 def match_intent_keywords_and_msg(user_msg, regex_pattern):
-    # 全半形控制
-    groups = re.search(regex_pattern, user_msg).groups()
-    print(user_msg)
-    print(regex_pattern)
-    print(groups)
-    return groups[0], "".join(groups[1:])
+    # TODO:全半形控制
+    result = re.search(regex_pattern, user_msg)
+    if result:
+        groups = result.groups()
+        return groups[0], "".join(groups[1:])
+    else:
+        return "", user_msg
