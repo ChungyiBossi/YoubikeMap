@@ -3,7 +3,8 @@ from flask import Flask
 from flask_socketio import SocketIO
 from simple_app.controllers import (
     simple_route,
-    openai_chatbot
+    openai_chatbot,
+    teachable_machine
 )
 from simple_app.postgreSQL.session import create_engine
 from simple_app.postgreSQL.tables import LineUser
@@ -31,6 +32,7 @@ def create_flask_app(test_config=None):
     # register blueprint
     app.register_blueprint(simple_route)
     app.register_blueprint(openai_chatbot)
+    app.register_blueprint(teachable_machine)
 
     # create db
     if app.config.get("ENABLE_POSTGRESQL"):
