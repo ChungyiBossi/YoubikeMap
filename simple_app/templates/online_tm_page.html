@@ -1,0 +1,362 @@
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.108.0">
+    <title>Cover Template · Bootstrap v5.3</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/cover/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+
+    <link href="https://getbootstrap.com/docs/5.3/examples/cover/cover.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" />
+    <!-- Favicons -->
+
+    <link rel="apple-touch-icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/apple-touch-icon.png"
+        sizes="180x180">
+    <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon-32x32.png" sizes="32x32"
+        type="image/png">
+    <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon-16x16.png" sizes="16x16"
+        type="image/png">
+    <link rel="manifest" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/manifest.json">
+    <link rel="mask-icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/safari-pinned-tab.svg"
+        color="#712cf9">
+    <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon.ico">
+    <meta name="theme-color" content="#712cf9">
+
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .image-preview-wrapper {
+            display: block;
+            max-width: 310px;
+            max-height: 310px;
+            width: 100%;
+            border: 2px solid #cccccc;
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .spinner-wrapper {
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .opacity-1 {
+            opacity: 1;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            border: 1px solid rgb(1, 1, 1);
+            background-color: #cccccc;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="d-flex h-100 text-center text-bg-dark">
+
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="mb-auto">
+            <div>
+                <h3 class="float-md-start mb-0">Cover</h3>
+                <nav class="nav nav-masthead justify-content-center float-md-end">
+                    <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link fw-bold py-1 px-0" href="#">Features</a>
+                    <a class="nav-link fw-bold py-1 px-0" href="#">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="px-3">
+            <div id="webcam-container"></div>
+            <img id="image-previewer" alt="image-placehoder" class="img-thumbnail" data-target="image-preview" hidden>
+            <div id="label-container"></div>
+            <div class="container p-5">
+                <!-- <div class="spinner-wrapper position-absolute" data-target="spinner">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div> -->
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mx-auto">
+                        <!-- Init model -->
+                        <div class="custom-file">
+                            <label for="model-init" class="custom-file-upload">
+                                Model initialize
+                            </label>
+                            <button id="model-init" type="button" onclick="init_model()" style="display: none;">
+                        </div>
+
+                        <!-- Upload file -->
+                        <div class="custom-file">
+                            <label for="file-upload" class="custom-file-upload">
+                                Upload File
+                            </label>
+                            <input id="file-upload" data-target="file-uploader" type="file" />
+                        </div>
+                        <!-- start Camera -->
+                        <div class="custom-file custom-file-upload">
+                            <label for="init-camera">
+                                Start Camera
+                            </label>
+                            <button id='init-camera' type="button" onclick="open_webcam()" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-auto text-white-50">
+            <p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>, by <a
+                    href="https://twitter.com/mdo" class="text-white">@mdo</a>.</p>
+        </footer>
+    </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+        // the link to your model provided by Teachable Machine export panel
+        // 你唯一需要改的地方
+        const URL = "https://teachablemachine.withgoogle.com/models/bUj5zCMaf/";
+
+        const TOPN = 3;
+        let model, webcam, labelContainer, maxPredictions;
+
+        // Load the image model and setup the webcam
+        async function init_model() {
+            try {
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                alert("Load model Success");
+            }
+            catch (error) {
+                alert(error);
+                console.log("Catch Error: ", error);
+            }
+        }
+
+        async function open_webcam() {
+            // Convenience function to setup a webcam
+            const flip = true; // whether to flip the webcam
+            webcam = new tmImage.Webcam(500, 500, flip); // width, height, flip
+            await webcam.setup(); // request access to the webcam
+            await webcam.play();
+            window.requestAnimationFrame(loop); // start loop
+
+
+        }
+
+
+        async function loop() {
+            webcam.update(); // update the webcam frame
+            await predict(is_webcam = true);
+            window.requestAnimationFrame(loop);
+        }
+
+        // run the webcam image through the image model
+        async function predict(is_webcam) {
+            // predict can take in an image, video or canvas html element
+            const prediction = is_webcam ?
+                await model.predict(webcam.canvas) :
+                await model.predict(document.getElementById('image-previewer'))
+
+            labelContainer = document.getElementById("label-container");
+            const topN = Math.min(TOPN, maxPredictions)
+            for (let i = 0; i < topN; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
+
+            for (let i = 0; i < topN; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
+        }
+    </script>
+    <script>
+        // STEP 1: select element and register change event
+        const imagePreview = document.querySelector('[data-target="image-preview"]');
+        const spinner = document.querySelector('[data-target="spinner"]');
+        const fileUploader = document.querySelector('[data-target="file-uploader"]');
+        fileUploader.addEventListener("change", handleFileUpload);
+        var fileArrayBuffer;
+        async function handleFileUpload(e) {
+            try {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const beforeUploadCheck = await beforeUpload(file);
+                if (!beforeUploadCheck.isValid) throw beforeUploadCheck.errorMessages;
+
+                const fileArrayBuffer = await getArrayBuffer(file);
+                const response = await uploadFileAJAX(fileArrayBuffer);
+
+                alert("File Uploaded Success");
+                showPreviewImage(file);
+                await predict(false);
+            } catch (error) {
+                alert(error);
+                console.log("Catch Error: ", error);
+            } finally {
+                e.target.value = '';  // reset input file
+            }
+        }
+
+        // STEP 2: showPreviewImage with createObjectURL
+        // If you prefer Base64 image, use "FileReader.readAsDataURL"
+        function showPreviewImage(fileObj) {
+            const image = window.URL.createObjectURL(fileObj);
+            imagePreview.src = image;
+            imagePreview.removeAttribute("hidden")
+        }
+
+        // STEP 3: change file object into ArrayBuffer
+        function getArrayBuffer(fileObj) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                // Get ArrayBuffer when FileReader on load
+                reader.addEventListener("load", () => {
+                    resolve(reader.result);
+                });
+
+                // Get Error when FileReader on error
+                reader.addEventListener("error", () => {
+                    reject("error occurred in getArrayBuffer");
+                });
+
+                // read the blob object as ArrayBuffer
+                // if you nedd Base64, use reader.readAsDataURL
+                reader.readAsArrayBuffer(fileObj);
+            });
+        }
+
+        // STEP 4: upload file throguth AJAX
+        // - use "new Uint8Array()"" to change ArrayBuffer into TypedArray
+        // - TypedArray is not a truely Array,
+        //   use "Array.from()" to change it into Array
+        function uploadFileAJAX(arrayBuffer) {
+            // correct it to your own API endpoint
+            return fetch("https://jsonplaceholder.typicode.com/posts/", {
+                headers: {
+                    version: 1,
+                    "content-type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    imageId: 1,
+                    icon: Array.from(new Uint8Array(arrayBuffer))
+                })
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw res.statusText;
+                    }
+                    return res.json();
+                })
+                .then(data => data)
+                .catch(err => console.log("err", err));
+        }
+
+        // STEP 5: Create before upload checker if needed
+        function beforeUpload(fileObject) {
+            return new Promise(resolve => {
+                const validFileTypes = ["image/jpeg", "image/png"];
+                const isValidFileType = validFileTypes.includes(fileObject.type);
+                let errorMessages = [];
+
+                if (!isValidFileType) {
+                    errorMessages.push("You can only upload JPG or PNG file!");
+                }
+
+                const isValidFileSize = fileObject.size / 1024 / 1024 < 2;
+                if (!isValidFileSize) {
+                    errorMessages.push("Image must smaller than 2MB!");
+                }
+
+                resolve({
+                    isValid: isValidFileType && isValidFileSize,
+                    errorMessages: errorMessages.join("\n")
+                });
+            });
+        }
+
+    </script>
+</body>
+
+</html>
