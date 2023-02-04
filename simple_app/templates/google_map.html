@@ -90,16 +90,16 @@
             locator.userCountry = null;
             locator.map = new google.maps.Map(mapEl, configuration.mapOptions); // Initialize the map
             locator.geocoder = new google.maps.Geocoder(); // Initialize Google geocoder
-            youbikeStationLocations(function(jsonData) {
+            youbikeStationLocations(function (jsonData) {
                 locator.youbikeStations = jsonData;
             }); // AJAX 應用(Asynchronous JavaScript and XML), init youbike taipei infomation
 
             // tool function
-            const getResultIndex = function(elem) {
+            const getResultIndex = function (elem) {
                 return parseInt(elem.getAttribute('data-location-index'));
             };
 
-            const selectResultItem = function(locationIdx, panToMarker, scrollToResult) {
+            const selectResultItem = function (locationIdx, panToMarker, scrollToResult) {
                 locator.selectedLocationIdx = locationIdx;
                 for (let locationElem of resultsContainerEl.children) {
                     locationElem.classList.remove('selected');
@@ -116,32 +116,32 @@
             };
             locator.selectResultItemCallback = selectResultItem; // Store selection.
 
-            locator.nearEnoughStations = function(stations) {
-                    return stations.filter(function(station) {
-                        let bikeSLoc = {
-                            'coords': {
-                                'lat': parseFloat(station.lat),
-                                'lng': parseFloat(station.lng)
-                            }
+            locator.nearEnoughStations = function (stations) {
+                return stations.filter(function (station) {
+                    let bikeSLoc = {
+                        'coords': {
+                            'lat': parseFloat(station.lat),
+                            'lng': parseFloat(station.lng)
                         }
-                        return locator.getLocationDistance(bikeSLoc) <= 300;
-                    })
-                }
-                // Create a init markers for each location.
-            locator.markers = locator.locations.map(function(location, index) {
+                    }
+                    return locator.getLocationDistance(bikeSLoc) <= 300;
+                })
+            }
+            // Create a init markers for each location.
+            locator.markers = locator.locations.map(function (location, index) {
                 const marker = new google.maps.Marker({
                     position: location.coords,
                     map: locator.map,
                     title: location.title,
                 });
-                marker.addListener('click', function() {
+                marker.addListener('click', function () {
                     selectResultItem(index, false, true);
                 });
                 return marker;
             });
 
             // Fit map to marker bounds.
-            locator.updateBounds = function() {
+            locator.updateBounds = function () {
                 const bounds = new google.maps.LatLngBounds();
                 if (locator.searchLocationMarker) {
                     bounds.extend(locator.searchLocationMarker.getPosition());
@@ -154,7 +154,7 @@
 
             // Get the distance of a store location to the user's location,
             // used in sorting the list.
-            locator.getLocationDistance = function(location) {
+            locator.getLocationDistance = function (location) {
                 if (!locator.searchLocation) return null;
 
                 // Use travel distance if available (from Distance Matrix).
@@ -169,14 +169,14 @@
             };;
 
             // Render the results list --------------------------------------------------
-            locator.renderResultsList = function() {
+            locator.renderResultsList = function () {
                 let locations = locator.locations.slice();
                 for (let i = 0; i < locations.length; i++) {
                     locations[i].index = i;
                 }
                 if (locator.searchLocation) {
                     sectionNameEl.textContent = 'Nearest Youbike Stations (' + locations.length + ')';
-                    locations.sort(function(a, b) {
+                    locations.sort(function (a, b) {
                         return locator.getLocationDistance(a) - locator.getLocationDistance(b);
                     });
                 } else {
@@ -193,13 +193,13 @@
                         item.classList.add('selected');
                     }
 
-                    const resultSelectionHandler = function() {
+                    const resultSelectionHandler = function () {
                         if (resultIndex !== locator.selectedLocationIdx) {
                             locator.clearDirections();
                         }
 
                         selectResultItem(resultIndex, true, true); // scrollToResult means if you want to centrialize the location
-                        if (locator.searchLocation) {} else {
+                        if (locator.searchLocation) { } else {
                             let loc = locator.locations[locator.selectedLocationIdx]
                             console.log("QQQQ: ", loc);
                             searchResultHandler(locator, loc.address1, loc.coords);
@@ -211,19 +211,19 @@
                     // accessible under tab navigation.
                     item.addEventListener('click', resultSelectionHandler);
                     item.querySelector('.select-location')
-                        .addEventListener('click', function(e) {
+                        .addEventListener('click', function (e) {
                             resultSelectionHandler();
                             e.stopPropagation();
                         });
 
                     item.querySelector('.details-button')
-                        .addEventListener('click', function() {
+                        .addEventListener('click', function () {
                             locator.showDetails(resultIndex);
                         });
 
                     if (resultItemContext.showDirectionsButton) {
                         item.querySelector('.show-directions')
-                            .addEventListener('click', function(e) {
+                            .addEventListener('click', function (e) {
                                 selectResultItem(resultIndex, false, false);
                                 locator.updateDirections();
                                 e.stopPropagation();
@@ -355,13 +355,16 @@
                 <header>
                     <!-- Find Youbike -->
                     <h1 class="search-title">
-                        <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg" /> Find a youbikes near you
+                        <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg" /> Find a
+                        youbikes near you
                     </h1>
                     <div class="search-input">
                         <input id="youbike-search-input" placeholder="Enter your address or zip code">
                         <div id="youbike-search-overlay-search" class="search-input-overlay search">
                             <button id="youbike-search-button">
-                                <img class="icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg" alt="Search"/>
+                                <img class="icon"
+                                    src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg"
+                                    alt="Search" />
                             </button>
                         </div>
                     </div>
@@ -379,7 +382,9 @@
         <div id="map"></div>
     </div>
     <!-- Callback:initMap-->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ config['GOOGLE_API_KEY'] }}&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE" async defer></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ config['GOOGLE_API_KEY'] }}&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_locatorplus_v4_cABCDE"
+        async defer></script>
 
 
 </body>

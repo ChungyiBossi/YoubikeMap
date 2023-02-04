@@ -1,0 +1,5 @@
+0 chicken_nugget
+1 hamburger
+2 fries
+3 ham
+4 salmon
