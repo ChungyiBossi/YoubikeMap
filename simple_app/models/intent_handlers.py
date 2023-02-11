@@ -2,7 +2,6 @@ from flask import current_app
 from collections import defaultdict
 from .line_msg_generator import *
 from .openai_api import chat, text_to_image
-import numpy as np
 
 memory = defaultdict(lambda: dict())  # local memory
 
@@ -112,31 +111,32 @@ def openaiImageCreateHandler(usrId, message):
 
 # TODO: search db -> get image url or imgur/imgus
 
+# import numpy as np
 
-fast_food_pic_url = {
-    'fries': "https://drive.google.com/file/d/1ucJp_z6LROYGjo5xCvXP6epZQOPPmQuG/view?usp=sharing",
-    'hamburger': "https://drive.google.com/file/d/1B-Wa2tjONXPZSNS9YE58obxFweL7XUAl/view?usp=sharing",
-    'salmon': "https://drive.google.com/file/d/15Pvq8tMZt_gb-_zDB7ZMeYb2gl34rBaO/view?usp=sharing",
-    'ham': "https://drive.google.com/file/d/1oPZqnmeG3j9QZ-tPhX8hvrtmnHXCYfmc/view?usp=sharing",
-    'chicken_nugget': "https://drive.google.com/file/d/1oczrXPAt6GEIjOg1B-0qt7Pksk57VdyR/view?usp=sharing"
-}
-
-
-def teachableMachineAudioHandler(usrId, message):
-    pred, prob = _classify_image(message)
-
-    return [{
-        "type": 'text',
-        "text": f'{pred}: {prob}'
-    }]
+# fast_food_pic_url = {
+#     'fries': "https://drive.google.com/file/d/1ucJp_z6LROYGjo5xCvXP6epZQOPPmQuG/view?usp=sharing",
+#     'hamburger': "https://drive.google.com/file/d/1B-Wa2tjONXPZSNS9YE58obxFweL7XUAl/view?usp=sharing",
+#     'salmon': "https://drive.google.com/file/d/15Pvq8tMZt_gb-_zDB7ZMeYb2gl34rBaO/view?usp=sharing",
+#     'ham': "https://drive.google.com/file/d/1oPZqnmeG3j9QZ-tPhX8hvrtmnHXCYfmc/view?usp=sharing",
+#     'chicken_nugget': "https://drive.google.com/file/d/1oczrXPAt6GEIjOg1B-0qt7Pksk57VdyR/view?usp=sharing"
+# }
 
 
-def _classify_image(image):
-    model = current_app.tm_model
-    labels = current_app.tm_label
-    probabilities = model.predict(image)
-    label = labels[np.argmax(probabilities)]
-    most_possible_one_prob = max(probabilities[0])
-    most_possible_one_prob = int(most_possible_one_prob * 100)
-    most_possible_one = label.split()[-1]
-    return most_possible_one, most_possible_one_prob
+# def teachableMachineHandler(usrId, image_data):
+#     pred, prob = _classify_image(image_data)
+
+#     return [{
+#         "type": 'text',
+#         "text": f'{pred}: {prob}'
+#     }]
+
+
+# def _classify_image(image_content):
+#     model = current_app.tm_model
+#     labels = current_app.tm_label
+#     probabilities = model.predict(image)
+#     label = labels[np.argmax(probabilities)]
+#     most_possible_one_prob = max(probabilities[0])
+#     most_possible_one_prob = int(most_possible_one_prob * 100)
+#     most_possible_one = label.split()[-1]
+#     return most_possible_one, most_possible_one_prob

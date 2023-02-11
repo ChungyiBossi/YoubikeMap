@@ -10,8 +10,7 @@ from flask import current_app
 #     return LineBotApi(current_app.config['LINE_CHANNEL_ACCESS_TOKEN'])
 
 
-
-## Reply with RESTful api
+# Reply with RESTful api
 def getLineReqHeader():
     lineChannelAccessToken = current_app.config['LINE_CHANNEL_ACCESS_TOKEN']
     return {
@@ -19,8 +18,9 @@ def getLineReqHeader():
         "Authorization": f"Bearer {lineChannelAccessToken}"
     }
 
+
 def getUserProfile(userId: str):
-    
+
     return re.get(current_app.config['LINE_PROFILE_API']+userId, headers=getLineReqHeader())
 
 
@@ -42,3 +42,12 @@ def sendPushMessage(userId, messageBody):
     }
     resp = re.post(pushURL, headers=getLineReqHeader(), data=json.dumps(body))
     return resp.status_code
+
+
+def getImageContent(msg_body):
+    if msg_body['contentProvider']['type'] == 'line':
+        message_id = msg_body['id']
+        replyUrl = f"https://api-data.line.me/v2/bot/message/{message_id}/content"
+        resp = re.get(replyUrl, headers=getLineReqHeader())
+        # return resp.iter_content(chunk_size=1024)
+        return resp.content

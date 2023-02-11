@@ -1,13 +1,15 @@
 from ..models.line_apis import (
     getUserProfile,
     sendReplyMessage,
-    sendPushMessage
+    sendPushMessage,
+    getImageContent
 )
 from simple_app.models.intent_handlers import *
 from simple_app.postgreSQL.session import create_sql_scoped_session
 from simple_app.postgreSQL.tables import LineUser
 from flask import current_app
 import re
+import logging
 
 intent_map = {
     # intent type: keywords
@@ -81,7 +83,7 @@ def getIntentResponse(**kwargs):
 
 def handleLineMessage(jsonData):
     update_line_user_data = dict()
-
+    logging.warn(jsonData)
     for event in jsonData['events']:
         userId = event["source"]["userId"]  # 推送到前端去需要userId
         profile = getUserProfile(userId).json()
@@ -108,6 +110,7 @@ def handleLineMessage(jsonData):
                 # sendPushMessage(userId, response)  # debug, 不透過webhook
             elif msg_body['type'] == 'image':
                 # TODO:收到圖片的處理
+                getImageContent(msg_body)
                 pass
 
         elif event['type'] == 'follow':

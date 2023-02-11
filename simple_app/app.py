@@ -10,7 +10,8 @@ from simple_app.postgreSQL.session import create_engine
 from simple_app.postgreSQL.tables import LineUser
 from simple_app.models.google_map_api import GooogleMapClient
 from simple_app.sockerio_route import create_sockio_client
-from simple_app.teachablemachine import load_model
+# App Engine Error
+# from simple_app.teachablemachine import load_model
 
 import openai
 
@@ -45,8 +46,8 @@ def create_flask_app(test_config=None):
 
     # Teachable Machine Model
     # TODO: multiple model management
-    app.tm_model, app.tm_label = load_model(
-        "simple_app/teachablemachine/models/fastfood")
+    # app.tm_model, app.tm_label = load_model(
+    #     "simple_app/teachablemachine/models/fastfood")
 
     # socket io
     # (?) 是不是創建socketio instance的時候，偷做了什麼事，因為只要創建後，就能透過gunicorn開啟
